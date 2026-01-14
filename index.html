@@ -59,6 +59,57 @@
     <textarea name="Details" placeholder="Date"required></textarea>
     <textarea name="Details" placeholder="Time"required></textarea>
     <textarea name="Details" placeholder="Pick Up  location"required></textarea>
+      <input type="date" id="datePicker" />
+
+    <button onclick="getLocation()">Get Location</button>
+
+    <div class="info" id="info"></div>
+    <div class="error" id="error"></div>
+  </div>
+
+  <script>
+    function getLocation() {
+      const info = document.getElementById("info");
+      const error = document.getElementById("error");
+      const date = document.getElementById("datePicker").value;
+
+      info.innerHTML = "";
+      error.innerHTML = "";
+
+      if (!date) {
+        error.textContent = "Please select a date first.";
+        return;
+      }
+
+      if (!navigator.geolocation) {
+        error.textContent = "Geolocation is not supported by this browser.";
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude.toFixed(6);
+          const lon = position.coords.longitude.toFixed(6);
+          const mapUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+
+          info.innerHTML = `
+            <p><strong>Date:</strong> ${date}</p>
+            <p><strong>Latitude:</strong> ${lat}</p>
+            <p><strong>Longitude:</strong> ${lon}</p>
+            <p><a href="${mapUrl}" target="_blank">📍 View on Map</a></p>
+          `;
+        },
+        () => {
+          error.textContent = "Location access denied.";
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
+    }
+  </script>
    
 
     <button type="submit">Send Booking Request</button>
