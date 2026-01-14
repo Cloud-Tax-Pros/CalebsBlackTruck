@@ -130,7 +130,12 @@ function getLocation() {
         <p><strong>Longitude:</strong> ${lon}</p>
       `;
 
-      const latlon = new google.maps.LatLng(lat, lon);
+      if (!window.google || !google.maps) {
+  output.innerHTML += "<p>Map not ready yet.</p>";
+  return;
+}
+const latlon = new google.maps.LatLng(lat, lon);
+
 
       mapDiv.style.height = "250px";
       mapDiv.style.width = "100%";
