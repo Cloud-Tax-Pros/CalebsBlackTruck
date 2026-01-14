@@ -61,14 +61,28 @@
       <option>Corporate Transport</option>
     </select>
 
-    <textarea name="Details" placeholder="Date"required></textarea>
+    
     <textarea name="Details" placeholder="Time"required></textarea>
     <textarea name="Details" placeholder="Pick Up  location"required></textarea>
    
     
 
     <button onclick="getLocation()">Get Location</button>
-
+<div class="ors-map-outer">
+	<div id="map-container" style="width: 100%; height: 100%; display: block;">
+		<div class="map-content-placeholder">
+			<div class="map-copyright">
+				<span>
+					&copy; <a href="http://www.printmaps.net" target="_blank">Printmaps.net</a> / <a href="http://www.openstreetmap.org/copyright" target="_blank">OSM Contributors</a>
+				</span>
+			</div>
+		</div>
+	</div>
+</div>
+<p class="signature">
+	<span id="estimatedDistance"></span>
+	<span id="userCoordinates"></span>
+</p>
     <div class="info" id="info"></div>
     <div class="error" id="error"></div>
   </div>
