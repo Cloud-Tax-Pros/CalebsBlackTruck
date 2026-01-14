@@ -164,3 +164,65 @@ const latlon = new google.maps.LatLng(lat, lon);
 
   <div id="fareResult"></div>
 </section>
+<script>
+function calculateRoute() {
+  const pickup = document.getElementById("pickup").value;
+  const dropoff = document.getElementById("dropoff").value;
+
+  if (!pickup || !dropoff) {
+    document.getElementById("fareResult").innerHTML =
+      "Please enter both pickup and dropoff locations.";
+    return;
+  }
+
+  const directionsService = new google.maps.DirectionsService();
+
+  directionsService.route(
+    {
+      origin: pickup,
+      destination: dropoff,
+      travelMode: google.maps.TravelMode.DRIVING,
+    },
+    function (result, status) {
+      if (status !== "OK") {
+        document.getElementById("fareResult").innerHTML =
+          "Unable to calculate route.";
+        return;
+      }
+
+      const leg = result.routes[0].legs[0];
+
+      const miles = leg.distance.value / 1609.34;
+      const minutes = leg.duration.value / 60;
+
+      calculateFare(miles, minutes);
+    }
+  );
+}
+
+function calculateFare(miles, minutes) {
+  // === YOUR RATES ===
+  const PER_MILE = 3.5;
+  const PER_MINUTE = 0.75;
+  const PEAK_MULTIPLIER = 1.25;
+
+  const currentHour = new Date().getHours();
+  const isPeak = currentHour >= 21; // 9:00 PM+
+
+  let total =
+    (miles * PER_MILE) +
+    (minutes * PER_MINUTE);
+
+  if (isPeak) {
+    total *= PEAK_MULTIPLIER;
+  }
+
+  document.getElementById("fareResult").innerHTML = `
+    <p><strong>Distance:</strong> ${miles.toFixed(1)} miles</p>
+    <p><strong>Estimated Time:</strong> ${minutes.toFixed(0)} minutes</p>
+    <p><strong>Pricing:</strong> ${isPeak ? "Peak (After 9PM)" : "Standard"}</p>
+    <p><strong>Estimated Fare:</strong> $${total.toFixed(2)}</p>
+  `;
+}
+</script>
+
