@@ -9,12 +9,10 @@
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 
-  <!-- Favicon -->
   <link rel="icon" href="./black truck.jpg">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
   <!-- Google Maps -->
-  <script src="https://maps.google.com/maps/api/js?key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM"></script>
+  <script src="https://maps.google.com/maps/api/js?key=YOUR_API_KEY"></script>
 </head>
 
 <body>
@@ -48,32 +46,15 @@
     <input type="tel" name="Phone" placeholder="Mobile Number" required>
     <input type="email" name="Email" placeholder="Email" required>
 
-    <label for="date">Date</label>
-    <input type="date" id="date" name="Date" required>
+    <label>Date</label>
+    <input type="date" name="Date" required>
 
-    <select name="Service" required>
-      <option value="">Select Service</option>
-      <option>Airport Pickup / Drop-off</option>
-      <option>Nightlife & Events</option>
-      <option>Hourly Chauffeur</option>
-      <option>Corporate Transport</option>
-    </select>
+    <label>Pickup Time</label>
+    <input type="time" name="Pickup Time" required>
 
-    <label for="time">Pickup Time</label>
-<input
-  type="time"
-  id="time"
-  name="Pickup Time"
-  required
->
+    <textarea name="Pickup Location" placeholder="Pickup Location" required></textarea>
 
-    <textarea name="PickupLocation" placeholder="Pickup Location" required></textarea>
-
-    <!-- LOCATION -->
-    <button type="button" onclick="getLocation(); return false;">
-  Get Location
-</button>
-
+    <button type="button" onclick="getLocation()">Get Location</button>
 
     <div id="locationOutput"></div>
     <div id="mapholder"></div>
@@ -82,22 +63,26 @@
   </form>
 </section>
 
-<section class="terms">
-  <h2>Booking Terms & Service Policy</h2>
-  <ul>
-    <li>⏰ Pre-booking required</li>
-    <li>📅 Availability not guaranteed until confirmed</li>
-    <li>❌ 24-hour cancellation policy</li>
-    <li>🚫 Late cancellations may affect future bookings</li>
-  </ul>
+<!-- FARE CALCULATOR -->
+<section class="fare-calculator">
+  <h2>Estimated Fare</h2>
+
+  <label>Pickup Address</label>
+  <input type="text" id="pickup" placeholder="Enter pickup address">
+
+  <label>Dropoff Address</label>
+  <input type="text" id="dropoff" placeholder="Enter dropoff address">
+
+  <button type="button" onclick="calculateRoute()">Calculate Fare</button>
+
+  <div id="fareResult"></div>
 </section>
-
-
 
 <footer>
   © Caleb’s Black Truck Service • Atlanta • Private • Trusted
 </footer>
 
+<!-- SCRIPTS -->
 <script>
 function getLocation() {
   const output = document.getElementById("locationOutput");
@@ -105,11 +90,6 @@ function getLocation() {
 
   output.innerHTML = "Getting location...";
   mapDiv.innerHTML = "";
-
-  if (!navigator.geolocation) {
-    output.innerHTML = "Geolocation not supported.";
-    return;
-  }
 
   navigator.geolocation.getCurrentPosition(
     (position) => {
@@ -121,12 +101,7 @@ function getLocation() {
         <p><strong>Longitude:</strong> ${lon}</p>
       `;
 
-      if (!window.google || !google.maps) {
-  output.innerHTML += "<p>Map not ready yet.</p>";
-  return;
-}
-const latlon = new google.maps.LatLng(lat, lon);
-
+      const latlon = new google.maps.LatLng(lat, lon);
 
       mapDiv.style.height = "250px";
       mapDiv.style.width = "100%";
@@ -138,8 +113,7 @@ const latlon = new google.maps.LatLng(lat, lon);
 
       new google.maps.Marker({
         position: latlon,
-        map: map,
-        title: "Current Location"
+        map: map
       });
     },
     () => {
@@ -147,82 +121,53 @@ const latlon = new google.maps.LatLng(lat, lon);
     }
   );
 }
-</script>
 
-</body>
-</html>
-<section class="fare-calculator">
-  <h2>Estimated Fare</h2>
-
-  <label>Pickup Location</label>
-  <input type="text" id="pickup" placeholder="Enter pickup address">
-
-  <label>Dropoff Location</label>
-  <input type="text" id="dropoff" placeholder="Enter dropoff address">
-
-  <button type="button" onclick="calculateRoute()">Calculate Fare</button>
-
-  <div id="fareResult"></div>
-</section>
-<script>
 function calculateRoute() {
   const pickup = document.getElementById("pickup").value;
   const dropoff = document.getElementById("dropoff").value;
 
   if (!pickup || !dropoff) {
-    document.getElementById("fareResult").innerHTML =
-      "Please enter both pickup and dropoff locations.";
+    document.getElementById("fareResult").innerText =
+      "Please enter both locations.";
     return;
   }
 
-  const directionsService = new google.maps.DirectionsService();
+  const service = new google.maps.DirectionsService();
 
-  directionsService.route(
+  service.route(
     {
       origin: pickup,
       destination: dropoff,
-      travelMode: google.maps.TravelMode.DRIVING,
+      travelMode: "DRIVING",
     },
-    function (result, status) {
+    (result, status) => {
       if (status !== "OK") {
-        document.getElementById("fareResult").innerHTML =
-          "Unable to calculate route.";
+        document.getElementById("fareResult").innerText =
+          "Route unavailable.";
         return;
       }
 
       const leg = result.routes[0].legs[0];
-
       const miles = leg.distance.value / 1609.34;
       const minutes = leg.duration.value / 60;
 
-      calculateFare(miles, minutes);
+      const ratePerMile = 3.5;
+      const ratePerMinute = 0.75;
+      const peak = new Date().getHours() >= 21;
+
+      let total = (miles * ratePerMile) + (minutes * ratePerMinute);
+      if (peak) total *= 1.25;
+
+      document.getElementById("fareResult").innerHTML = `
+        <p>${miles.toFixed(1)} miles • ${minutes.toFixed(0)} mins</p>
+        <p>${peak ? "Peak Pricing" : "Standard Pricing"}</p>
+        <p><strong>$${total.toFixed(2)}</strong></p>
+      `;
     }
   );
 }
-
-function calculateFare(miles, minutes) {
-  // === YOUR RATES ===
-  const PER_MILE = 3.5;
-  const PER_MINUTE = 0.75;
-  const PEAK_MULTIPLIER = 1.25;
-
-  const currentHour = new Date().getHours();
-  const isPeak = currentHour >= 21; // 9:00 PM+
-
-  let total =
-    (miles * PER_MILE) +
-    (minutes * PER_MINUTE);
-
-  if (isPeak) {
-    total *= PEAK_MULTIPLIER;
-  }
-
-  document.getElementById("fareResult").innerHTML = `
-    <p><strong>Distance:</strong> ${miles.toFixed(1)} miles</p>
-    <p><strong>Estimated Time:</strong> ${minutes.toFixed(0)} minutes</p>
-    <p><strong>Pricing:</strong> ${isPeak ? "Peak (After 9PM)" : "Standard"}</p>
-    <p><strong>Estimated Fare:</strong> $${total.toFixed(2)}</p>
-  `;
-}
 </script>
+
+</body>
+</html>
 
