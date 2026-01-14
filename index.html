@@ -1,126 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Contact | Caleb’s Black Truck</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Request a private chauffeur in Atlanta. Pre-booking only. Professional, discreet service.">
-<link rel="stylesheet" href="styles.css">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-<!-- Favicon -->
-<link rel="icon" href="./black truck.jpg">
-<link rel="icon" type="image/png" sizes="32x32" href="/CalebsBlackTruck.png">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta charset="UTF-8">
+  <title>Contact | Caleb’s Black Truck</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Request a private chauffeur in Atlanta. Pre-booking only. Professional, discreet service.">
 
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 
-  <div class="logo">
-  CALEB’S BLACK TRUCK
-  <span>Private Chauffeur Service</span>
-</div>
-<section class="gallery">
+  <!-- Favicon -->
+  <link rel="icon" href="./black truck.jpg">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-  <div class="gallery-grid">
-    <img src="./CalebsBlackTruck.png" alt="Luxury black truck front view">
-    <img src="./black truck.jpg" alt="Private chauffeur black truck side view">
-    
-  </div>
-</section>
-
-<header class="hero">
-  <h1>Request a Chauffeur</h1>
-  <p>Private • Professional • Pre-Booking Only</p>
-  <p class="trust">Trusted by professionals, executives, and private clients</p>
-
-</header>
-
-<section class="booking">
-  <h2>Booking Request</h2>
-
-  <form action="https://formsubmit.co/nowwhatinc2@gmail.com" method="POST">
-    <input type="hidden" name="_subject" value="New Chauffeur Booking Request">
-    <input type="hidden" name="_captcha" value="false">
-
-    <input type="text" name="Name" placeholder="Your Name" required>
-    <input type="tel" name="Phone" placeholder="Mobile Number" required>
-    <input type="email" name="Email" placeholder="Email" required>
-
-    <select name="Service" required>
-      <option value="">Select Service</option>
-      <option>Airport Pickup / Drop-off</option>
-      <option>Nightlife & Events</option>
-      <option>Hourly Chauffeur</option>
-      <option>Corporate Transport</option>
-    </select>
-
-    <textarea name="Details" placeholder="Date, time, pickup & drop-off location" required></textarea>
-	  
-
-  <div class="logo">
-  CALEB’S BLACK TRUCK
-  <span>Private Chauffeur Service</span>
-</div>
-<section class="gallery">
-
-  <div class="gallery-grid">
-    <img src="./CalebsBlackTruck.png" alt="Luxury black truck front view">
-    <img src="./black truck.jpg" alt="Private chauffeur black truck side view">
-    
-  </div>
-</section>
-
-<header class="hero">
-  <h1>Request a Chauffeur</h1>
-  <p>Private • Professional • Pre-Booking Only</p>
-  <p class="trust">Trusted by professionals, executives, and private clients</p>
-
-</header>
-
-<section class="booking">
-  <h2>Booking Request</h2>
-
-  <form action="https://formsubmit.co/nowwhatinc2@gmail.com" method="POST">
-    <input type="hidden" name="_subject" value="New Chauffeur Booking Request">
-    <input type="hidden" name="_captcha" value="false">
-
-    <input type="text" name="Name" placeholder="Your Name" required>
-    <input type="tel" name="Phone" placeholder="Mobile Number" required>
-    <input type="email" name="Email" placeholder="Email" required>
-
-    <select name="Service" required>
-      <option value="">Select Service</option>
-      <option>Airport Pickup / Drop-off</option>
-      <option>Nightlife & Events</option>
-      <option>Hourly Chauffeur</option>
-      <option>Corporate Transport</option>
-    </select>
-
-    
-<textarea name="Details" placeholder="Time"required></textarea> <textarea name="Details" placeholder="Pick Up location"required></textarea>
-    <form action="/action_page.php">
-  <label for="date">DATE:</label>
-  <input type="date" id="birthday" name="birthday">
-  <input type="submit">
-</form>
-
+  <!-- Google Maps -->
+  <script src="https://maps.google.com/maps/api/js?key=YOUR_API_KEY"></script>
 </head>
-	<script src="https://maps.google.com/maps/api/js?key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM"></script>
 
-	<script>
+<body>
+
+<div class="logo">
+  CALEB’S BLACK TRUCK
+  <span>Private Chauffeur Service</span>
+</div>
+
+<section class="gallery">
+  <div class="gallery-grid">
+    <img src="./CalebsBlackTruck.png" alt="Luxury black truck front view">
+    <img src="./black truck.jpg" alt="Private chauffeur black truck side view">
+  </div>
+</section>
+
+<header class="hero">
+  <h1>Request a Chauffeur</h1>
+  <p>Private • Professional • Pre-Booking Only</p>
+  <p class="trust">Trusted by professionals, executives, and private clients</p>
+</header>
+
+<section class="booking">
+  <h2>Booking Request</h2>
+
+  <form action="https://formsubmit.co/nowwhatinc2@gmail.com" method="POST">
+    <input type="hidden" name="_subject" value="New Chauffeur Booking Request">
+    <input type="hidden" name="_captcha" value="false">
+
+    <input type="text" name="Name" placeholder="Your Name" required>
+    <input type="tel" name="Phone" placeholder="Mobile Number" required>
+    <input type="email" name="Email" placeholder="Email" required>
+
+    <label for="date">Date</label>
+    <input type="date" id="date" name="Date" required>
+
+    <select name="Service" required>
+      <option value="">Select Service</option>
+      <option>Airport Pickup / Drop-off</option>
+      <option>Nightlife & Events</option>
+      <option>Hourly Chauffeur</option>
+      <option>Corporate Transport</option>
+    </select>
+
+    <textarea name="Time" placeholder="Requested Time" required></textarea>
+    <textarea name="PickupLocation" placeholder="Pickup Location" required></textarea>
+
+    <!-- LOCATION -->
+    <button type="button" onclick="getLocation()">Get Location</button>
+
+    <div id="locationOutput"></div>
+    <div id="mapholder"></div>
+
+    <button type="submit">Send Booking Request</button>
+  </form>
+</section>
+
+<section class="terms">
+  <h2>Booking Terms & Service Policy</h2>
+  <ul>
+    <li>⏰ Pre-booking required</li>
+    <li>📅 Availability not guaranteed until confirmed</li>
+    <li>❌ 24-hour cancellation policy</li>
+    <li>🚫 Late cancellations may affect future bookings</li>
+  </ul>
+</section>
+
+<section class="map-section">
+  <h2>Service Area</h2>
+  <iframe
+    src="https://www.google.com/maps?q=Atlanta,GA&output=embed"
+    width="100%"
+    height="350"
+    style="border:0;"
+    loading="lazy">
+  </iframe>
+</section>
+
+<footer>
+  © Caleb’s Black Truck Service • Atlanta • Private • Trusted
+</footer>
+
+<script>
 function getLocation() {
   const output = document.getElementById("locationOutput");
   const mapDiv = document.getElementById("mapholder");
 
-  output.innerHTML = "";
+  output.innerHTML = "Getting location...";
   mapDiv.innerHTML = "";
 
   if (!navigator.geolocation) {
-    output.innerHTML = "<p style='color:red'>Geolocation not supported.</p>";
+    output.innerHTML = "Geolocation not supported.";
     return;
   }
 
   navigator.geolocation.getCurrentPosition(
-    function (position) {
+    (position) => {
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
 
@@ -136,73 +127,22 @@ function getLocation() {
 
       const map = new google.maps.Map(mapDiv, {
         center: latlon,
-        zoom: 14,
+        zoom: 14
       });
 
       new google.maps.Marker({
         position: latlon,
         map: map,
-        title: "Current Location",
+        title: "Current Location"
       });
     },
-    function () {
-      output.innerHTML =
-        "<p style='color:red'>Location permission denied.</p>";
-    },
-    {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0
+    () => {
+      output.innerHTML = "Location permission denied.";
     }
   );
 }
 </script>
 
-    <button type="submit">Send Booking Request</button>
-  </form>
-</section>
-
-<section class="terms">
-  <h2>Booking Terms & Service Policy</h2>
-
-  <p>
-    Caleb’s Black Truck provides <strong>private, pre-scheduled chauffeur services</strong>.
-    All services are available by advance request only.
-  </p>
-
-  <ul>
-    <li>⏰ <strong>Pre-booking required.</strong> Same-minute or on-demand requests are not accepted.</li>
-    <li>📅 <strong>Availability is not guaranteed</strong> until your booking is confirmed.</li>
-    <li>❌ <strong>Cancellations must be made at least 24 hours in advance.</strong></li>
-    <li>🚫 Late cancellations or no-shows may result in refusal of future service.</li>
-    <li>💼 Remaining balance (if applicable) is due at time of pickup.</li>
-  </ul>
-
-  <p class="terms-note">
-    By submitting a booking request, you acknowledge and agree to these service terms.
-  </p>
-</section>
-<section class="map-section">
-  <h2>Service Area</h2>
-  <p>Providing private chauffeur services throughout the Atlanta metro area.</p>
-
-  <div class="map-container">
-    <iframe
-      src="https://www.google.com/maps?q=Atlanta,GA&output=embed"
-      width="100%"
-      height="350"
-      style="border:0;"
-      allowfullscreen=""
-      loading="lazy"
-      referrerpolicy="no-referrer-when-downgrade">
-    </iframe>
-  </div>
-</section>
-
-
-<footer>
-  © Caleb’s Black Truck Service • Atlanta • Private • Trusted
-</footer>
-
 </body>
 </html>
+
