@@ -70,7 +70,10 @@
     <textarea name="PickupLocation" placeholder="Pickup Location" required></textarea>
 
     <!-- LOCATION -->
-    <button type="button" onclick="getLocation()">Get Location</button>
+    <button type="button" onclick="getLocation(); return false;">
+  Get Location
+</button>
+
 
     <div id="locationOutput"></div>
     <div id="mapholder"></div>
