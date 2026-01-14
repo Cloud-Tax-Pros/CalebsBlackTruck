@@ -92,16 +92,7 @@
   </ul>
 </section>
 
-<section class="map-section">
-  <h2>Service Area</h2>
-  <iframe
-    src="https://www.google.com/maps?q=Atlanta,GA&output=embed"
-    width="100%"
-    height="350"
-    style="border:0;"
-    loading="lazy">
-  </iframe>
-</section>
+
 
 <footer>
   © Caleb’s Black Truck Service • Atlanta • Private • Trusted
@@ -160,4 +151,93 @@ const latlon = new google.maps.LatLng(lat, lon);
 
 </body>
 </html>
+<section class="fare-calculator">
+  <h2>Estimated Fare</h2>
+
+  <label>Miles</label>
+  <input type="number" id="miles" placeholder="e.g. 12" min="0" step="0.1">
+
+  <label>Time (minutes)</label>
+  <input type="number" id="minutes" placeholder="e.g. 30" min="0">
+
+  <label>
+    <input type="checkbox" id="peak">
+    Peak Hours (After 9PM / Events)
+  </label>
+
+  <button type="button" onclick="calculateFare()">Calculate Fare</button>
+
+  <div id="fareResult"></div>
+</section>
+
+<style>
+.fare-calculator {
+  background: #000;
+  border: 2px solid #444;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 30px;
+  color: #fff;
+}
+
+.fare-calculator label {
+  display: block;
+  margin-top: 12px;
+}
+
+.fare-calculator input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  background: #111;
+  border: 1px solid #555;
+  border-radius: 6px;
+  color: #fff;
+}
+
+.fare-calculator button {
+  margin-top: 15px;
+  width: 100%;
+  padding: 12px;
+  background: #000;
+  border: 2px solid #fff;
+  color: #fff;
+  cursor: pointer;
+}
+
+#fareResult {
+  margin-top: 15px;
+  font-size: 18px;
+  font-weight: bold;
+}
+</style>
+
+<script>
+function calculateFare() {
+  // === ADJUST YOUR RATES HERE ===
+  const BASE_FARE = 25;
+  const PER_MILE = 3.5;
+  const PER_MINUTE = 0.75;
+  const PEAK_MULTIPLIER = 1.2;
+
+  const miles = parseFloat(document.getElementById("miles").value) || 0;
+  const minutes = parseFloat(document.getElementById("minutes").value) || 0;
+  const isPeak = document.getElementById("peak").checked;
+
+  let total =
+    BASE_FARE +
+    (miles * PER_MILE) +
+    (minutes * PER_MINUTE);
+
+  if (isPeak) {
+    total *= PEAK_MULTIPLIER;
+  }
+
+  total = Math.max(total, 50); // minimum fare
+
+  document.getElementById("fareResult").innerHTML =
+    "Estimated Fare: $" + total.toFixed(2);
+}
+</script>
+
 
