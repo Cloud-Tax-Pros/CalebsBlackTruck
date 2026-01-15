@@ -59,7 +59,7 @@
     <div id="locationOutput"></div>
     <div id="mapholder"></div>
 
-    <button type="submit">Send Booking Request</button>
+    <button type="submit">Submit</button>
   </form>
 </section>
 
@@ -102,8 +102,8 @@ function getLocation() {
       const lon = position.coords.longitude;
 
       try {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&email=info@calebsblacktruck.com`)
+
         );
         const data = await response.json();
 
