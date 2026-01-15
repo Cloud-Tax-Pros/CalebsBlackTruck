@@ -12,9 +12,10 @@
 
 <!-- GOOGLE MAPS -->
 <script
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM&libraries=places"
-  defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM&libraries=places&callback=initAutocomplete"
+  async
 ></script>
+
 
 <!-- FONTS -->
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
@@ -64,6 +65,34 @@ body {
   background: #000;
   color: #fff;
 }
+  .pickup-wrapper {
+  position: relative;
+}
+
+.suggestions {
+  position: absolute;
+  width: 100%;
+  background: #000;
+  border: 1px solid #444;
+  z-index: 9999;
+}
+
+.suggestion {
+  padding: 12px;
+  border-bottom: 1px solid #333;
+  cursor: pointer;
+}
+
+.suggestion:hover {
+  background: #111;
+}
+
+.suggestion small {
+  display: block;
+  font-size: 12px;
+  color: #aaa;
+}
+
 
 h1, h2 {
   font-family: "Playfair Display", serif;
@@ -168,25 +197,34 @@ footer {
   <img src="black truck.jpg" alt="black truck">
   <span>Private Chauffeur Service • Atlanta</span>
 </div>
+  
 
 <!-- SCREEN 1: ROUTE -->
 <div class="screen active" id="screen-route">
   <h2>See Your Quote Before You Book</h2>
 
-  <label>Pickup Location</label>
-  <div class="pickup-wrapper">
-    <input
-      type="text"
-      id="pickup"
-      placeholder="Enter pickup location"
-      autocomplete="off"
-      required
-    />
+ <label>Pickup Location</label>
 
-    <button type="button" id="useLocation">
-      📍 Set as my current location
-    </button>
+<div class="pickup-wrapper">
+  <input
+    id="pickup"
+    type="text"
+    placeholder="Enter Pickup Location"
+    autocomplete="off"
+  />
+
+  <!-- CUSTOM DROPDOWN -->
+  <div id="pickup-suggestions" class="suggestions">
+    <div class="suggestion" onclick="useCurrentLocation()">
+      📍 <strong>Set As My Current Location</strong>
+      <small id="currentAddress"></small>
+    </div>
+
+    <div class="suggestion airport" onclick="setPickup('Hartsfield-Jackson Atlanta International Airport')">
+      ✈️ Hartsfield-Jackson Atlanta International Airport
+    </div>
   </div>
+</div>
 
   <label>Dropoff Location</label>
   <input
@@ -466,6 +504,59 @@ document.getElementById("useLocation").addEventListener("click", () => {
   );
 });
 </script>
+  <script>
+let autocomplete;
+
+function initAutocomplete() {
+  autocomplete = new google.maps.places.Autocomplete(
+    document.getElementById("pickup"),
+    {
+      types: ["geocode"],
+      componentRestrictions: { country: "us" }
+    }
+  );
+
+  autocomplete.addListener("place_changed", () => {
+    document.getElementById("pickup-suggestions").style.display = "none";
+  });
+
+  document.getElementById("pickup").addEventListener("focus", () => {
+    document.getElementById("pickup-suggestions").style.display = "block";
+  });
+}
+
+/* ===== CURRENT LOCATION ===== */
+async function useCurrentLocation() {
+  if (!navigator.geolocation) {
+    alert("Geolocation not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+
+    const res = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM`
+    );
+
+    const data = await res.json();
+    if (data.results.length) {
+      document.getElementById("pickup").value =
+        data.results[0].formatted_address;
+
+      document.getElementById("pickup-suggestions").style.display = "none";
+    }
+  });
+}
+
+/* QUICK SET */
+function setPickup(value) {
+  document.getElementById("pickup").value = value;
+  document.getElementById("pickup-suggestions").style.display = "none";
+}
+</script>
+
 
 </body>
 </html>
