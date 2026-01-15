@@ -172,35 +172,36 @@ footer {
 <!-- SCREEN 1: ROUTE -->
 <div class="screen active" id="screen-route">
   <h2>See Your Quote Before You Book</h2>
-  <label>Pickup Location</label>
 
-<div class="pickup-wrapper">
+  <label>Pickup Location</label>
+  <div class="pickup-wrapper">
+    <input
+      type="text"
+      id="pickup"
+      placeholder="Enter pickup location"
+      autocomplete="off"
+      required
+    />
+
+    <button type="button" id="useLocation">
+      📍 Set as my current location
+    </button>
+  </div>
+
+  <label>Dropoff Location</label>
   <input
     type="text"
-    id="pickup"
-    placeholder="Enter pickup location"
+    id="dropoff"
+    placeholder="Enter dropoff location"
     autocomplete="off"
     required
   />
-
-  <button type="button" id="useLocation">
-    📍 Set as my current location
-  </button>
-</div>
-
-
-  <input id="pickup" placeholder="Pickup address">
-  <button type="button"
-  onclick="openNavigation(document.getElementById('pickup').value)">
-  Start GPS Navigation
-</button>
-
-  <input id="dropoff" placeholder="Dropoff address">
 
   <button onclick="confirmRoute()">CONFIRM YOUR ROUTE</button>
 
   <div id="map"></div>
 </div>
+
   <script>
 let pickupAutocomplete;
 let dropoffAutocomplete;
@@ -315,16 +316,59 @@ window.addEventListener("load", () => {
 
 <script>
 let map, directionsService, directionsRenderer;
+let pickupAutocomplete, dropoffAutocomplete;
 let miles = 0, minutes = 0;
-let vehicle = "", multiplier = 1;
-let baseFare = 0;
 
-function show(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+/* ===== GOOGLE AUTOCOMPLETE ===== */
+function initAutocomplete() {
+  pickupAutocomplete = new google.maps.places.Autocomplete(
+    document.getElementById("pickup"),
+    { types: ["geocode"], componentRestrictions: { country: "us" } }
+  );
+
+  dropoffAutocomplete = new google.maps.places.Autocomplete(
+    document.getElementById("dropoff"),
+    { types: ["geocode"], componentRestrictions: { country: "us" } }
+  );
 }
 
+/* ===== CURRENT LOCATION ===== */
+document.addEventListener("DOMContentLoaded", () => {
+  initAutocomplete();
+
+  document.getElementById("useLocation").addEventListener("click", () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation not supported");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+
+      const res = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM`
+      );
+
+      const data = await res.json();
+      if (data.results.length) {
+        document.getElementById("pickup").value =
+          data.results[0].formatted_address;
+      }
+    });
+  });
+});
+
+/* ===== ROUTE + MAP ===== */
 function confirmRoute() {
+  const pickup = document.getElementById("pickup").value;
+  const dropoff = document.getElementById("dropoff").value;
+
+  if (!pickup || !dropoff) {
+    alert("Please enter pickup and dropoff locations");
+    return;
+  }
+
   directionsService = new google.maps.DirectionsService();
   directionsRenderer = new google.maps.DirectionsRenderer();
 
@@ -335,65 +379,32 @@ function confirmRoute() {
 
   directionsRenderer.setMap(map);
 
-  directionsService.route({
-    origin: document.getElementById("pickup").value,
-    destination: document.getElementById("dropoff").value,
-    travelMode: 'DRIVING'
-  }, (result, status) => {
-    if (status !== 'OK') {
-      alert("Route not found");
-      return;
+  directionsService.route(
+    {
+      origin: pickup,
+      destination: dropoff,
+      travelMode: "DRIVING"
+    },
+    (result, status) => {
+      if (status !== "OK") {
+        alert("Route not found");
+        return;
+      }
+
+      directionsRenderer.setDirections(result);
+
+      const leg = result.routes[0].legs[0];
+      miles = leg.distance.value / 1609.34;
+      minutes = leg.duration.value / 60;
+
+      alert(
+        `Distance: ${miles.toFixed(1)} miles\nTime: ${minutes.toFixed(0)} mins`
+      );
     }
-
-    directionsRenderer.setDirections(result);
-    const leg = result.routes[0].legs[0];
-
-    miles = leg.distance.value / 1609.34;
-    minutes = leg.duration.value / 60;
-
-    show("screen-datetime");
-  });
-}
-
-function confirmDate() {
-  show("screen-flight");
-}
-
-function confirmFlight() {
-  const PER_MILE = 3.5;
-  const PER_MINUTE = 0.75;
-  const isPeak = new Date().getHours() >= 21;
-
-  baseFare = (miles * PER_MILE) + (minutes * PER_MINUTE);
-  if (isPeak) baseFare *= 1.25;
-
-  document.getElementById("price-suv").innerText = baseFare.toFixed(2);
-  document.getElementById("price-exec").innerText = (baseFare * 1.1).toFixed(2);
-
-  show("screen-vehicle");
-}
-
-function selectVehicle(name, mult, el) {
-  vehicle = name;
-  multiplier = mult;
-
-  document.querySelectorAll('.vehicle').forEach(v => v.classList.remove('active'));
-  el.classList.add('active');
-}
-
-function confirmVehicle() {
-  const totalCost = (baseFare * multiplier).toFixed(2);
-
-  document.getElementById("summary").innerHTML = `
-    <strong>Route:</strong><br>
-    ${document.getElementById("pickup").value} → ${document.getElementById("dropoff").value}<br><br>
-    <strong>Vehicle:</strong> ${vehicle}
-  `;
-
-  document.getElementById("total").innerText = `Trip Total: $${totalCost}`;
-  show("screen-summary");
+  );
 }
 </script>
+
   <script>
 function openNavigation(address) {
   if (!address) {
