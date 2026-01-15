@@ -148,6 +148,29 @@ footer {
 
   <div id="map"></div>
 </div>
+  <script>
+let pickupAutocomplete;
+let dropoffAutocomplete;
+
+function initAutocomplete() {
+  pickupAutocomplete = new google.maps.places.Autocomplete(
+    document.getElementById("pickup"),
+    { types: ["geocode"] }
+  );
+
+  dropoffAutocomplete = new google.maps.places.Autocomplete(
+    document.getElementById("dropoff"),
+    { types: ["geocode"] }
+  );
+}
+
+// Wait until Google Maps loads
+window.addEventListener("load", () => {
+  if (window.google) {
+    initAutocomplete();
+  }
+});
+</script>
 
 <!-- SCREEN 2: DATE / TIME -->
 <div class="screen" id="screen-datetime">
