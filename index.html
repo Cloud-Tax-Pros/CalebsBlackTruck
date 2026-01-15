@@ -11,7 +11,10 @@
 <link rel="icon" href="black truck.jpg">
 
 <!-- GOOGLE MAPS -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM&libraries=places"></script>
+<script
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM&libraries=places"
+  defer>
+</script>
 
 <!-- FONTS -->
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
@@ -209,6 +212,30 @@ function payNow() {
 <footer>
   © Caleb’s Black Truck • Private • Trusted • Atlanta
 </footer>
+  <script>
+let pickupAutocomplete;
+let dropoffAutocomplete;
+
+function initAutocomplete() {
+  pickupAutocomplete = new google.maps.places.Autocomplete(
+    document.getElementById("pickup"),
+    { types: ["geocode"] }
+  );
+
+  dropoffAutocomplete = new google.maps.places.Autocomplete(
+    document.getElementById("dropoff"),
+    { types: ["geocode"] }
+  );
+}
+
+// Wait until Google Maps loads
+window.addEventListener("load", () => {
+  if (window.google) {
+    initAutocomplete();
+  }
+});
+</script>
+
 
 <script>
 let map, directionsService, directionsRenderer;
