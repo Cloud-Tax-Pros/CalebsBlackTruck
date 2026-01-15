@@ -134,6 +134,11 @@ footer {
   <h2>See Your Quote Before You Book</h2>
 
   <input id="pickup" placeholder="Pickup address">
+  <button type="button"
+  onclick="openNavigation(document.getElementById('pickup').value)">
+  Start GPS Navigation
+</button>
+
   <input id="dropoff" placeholder="Dropoff address">
 
   <button onclick="confirmRoute()">CONFIRM YOUR ROUTE</button>
@@ -286,6 +291,22 @@ function confirmVehicle() {
   show("screen-summary");
 }
 </script>
+  <script>
+function openNavigation(address) {
+  if (!address) {
+    alert("Please enter a pickup address first.");
+    return;
+  }
+
+  const encodedAddress = encodeURIComponent(address);
+
+  // This opens Google Maps navigation
+  const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}&travelmode=driving`;
+
+  window.open(mapsUrl, "_blank");
+}
+</script>
+
 
 
 </body>
