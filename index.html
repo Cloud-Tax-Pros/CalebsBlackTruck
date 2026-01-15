@@ -52,7 +52,13 @@
     <label>Pickup Time</label>
     <input type="time" name="Pickup Time" required>
 
-    <textarea name="Pickup Location" placeholder="Pickup Location" required></textarea>
+    <textarea
+  id="pickupLocation"
+  name="Pickup Location"
+  placeholder="Pickup Location"
+  required
+></textarea>
+
 
     <button type="button" onclick="getLocation()">Get Location</button>
 
@@ -102,18 +108,20 @@ function getLocation() {
       const lon = position.coords.longitude;
 
       try {
-        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&email=info@calebsblacktruck.com`)
-
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&email=info@calebsblacktruck.com`
         );
-        const data = await response.json();
 
+        if (!response.ok) throw new Error("Reverse geocoding failed");
+
+        const data = await response.json();
         const address = data.display_name || "Address unavailable";
 
         output.innerHTML = `
           <p><strong>Pickup Address:</strong><br>${address}</p>
         `;
 
-        // ✅ Auto-fill the pickup location field
+        // Auto-fill pickup location
         pickupField.value = address;
 
       } catch (error) {
@@ -126,6 +134,7 @@ function getLocation() {
   );
 }
 </script>
+
 
 
 </body>
