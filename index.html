@@ -220,8 +220,8 @@ function confirmRoute() {
   directionsRenderer.setMap(map);
 
   directionsService.route({
-    origin: pickup.value,
-    destination: dropoff.value,
+    origin: document.getElementById("pickup").value,
+    destination: document.getElementById("dropoff").value,
     travelMode: 'DRIVING'
   }, (result, status) => {
     if (status !== 'OK') {
@@ -244,37 +244,41 @@ function confirmDate() {
 }
 
 function confirmFlight() {
-  const perMile = 3.5;
-  const perMinute = 0.75;
-  const peak = new Date().getHours() >= 21 ? 1.25 : 1;
+  const PER_MILE = 3.5;
+  const PER_MINUTE = 0.75;
+  const isPeak = new Date().getHours() >= 21;
 
-  baseFare = (miles * perMile + minutes * perMinute) * peak;
+  baseFare = (miles * PER_MILE) + (minutes * PER_MINUTE);
+  if (isPeak) baseFare *= 1.25;
 
-  price-suv.innerText = baseFare.toFixed(2);
-  price-exec.innerText = (baseFare * 1.1).toFixed(2);
+  document.getElementById("price-suv").innerText = baseFare.toFixed(2);
+  document.getElementById("price-exec").innerText = (baseFare * 1.1).toFixed(2);
 
   show("screen-vehicle");
 }
 
-function selectVehicle(name, mult) {
+function selectVehicle(name, mult, el) {
   vehicle = name;
   multiplier = mult;
+
   document.querySelectorAll('.vehicle').forEach(v => v.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  el.classList.add('active');
 }
 
 function confirmVehicle() {
-  const total = (baseFare * multiplier).toFixed(2);
+  const totalCost = (baseFare * multiplier).toFixed(2);
 
-  summary.innerHTML = `
-    <strong>Route:</strong><br>${pickup.value} → ${dropoff.value}<br><br>
+  document.getElementById("summary").innerHTML = `
+    <strong>Route:</strong><br>
+    ${document.getElementById("pickup").value} → ${document.getElementById("dropoff").value}<br><br>
     <strong>Vehicle:</strong> ${vehicle}
   `;
 
-  total.innerText = `Trip Total: $${total}`;
+  document.getElementById("total").innerText = `Trip Total: $${totalCost}`;
   show("screen-summary");
 }
 </script>
+
 
 </body>
 </html>
