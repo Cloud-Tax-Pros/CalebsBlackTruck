@@ -86,87 +86,46 @@
 <script>
 function getLocation() {
   const output = document.getElementById("locationOutput");
-  const mapDiv = document.getElementById("mapholder");
+  const pickupField = document.getElementById("pickupLocation");
 
   output.innerHTML = "Getting location...";
-  mapDiv.innerHTML = "";
+
+  if (!navigator.geolocation) {
+    output.innerHTML = "Geolocation not supported.";
+    return;
+  }
 
   navigator.geolocation.getCurrentPosition(
-    (position) => {
+    async (position) => {
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
 
-      output.innerHTML = `
-        <p><strong>Latitude:</strong> ${lat}</p>
-        <p><strong>Longitude:</strong> ${lon}</p>
-      `;
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+        );
+        const data = await response.json();
 
-      const latlon = new google.maps.LatLng(lat, lon);
+        const address = data.display_name || "Address unavailable";
 
-      mapDiv.style.height = "250px";
-      mapDiv.style.width = "100%";
+        output.innerHTML = `
+          <p><strong>Pickup Address:</strong><br>${address}</p>
+        `;
 
-      const map = new google.maps.Map(mapDiv, {
-        center: latlon,
-        zoom: 14
-      });
+        // ✅ Auto-fill the pickup location field
+        pickupField.value = address;
 
-      new google.maps.Marker({
-        position: latlon,
-        map: map
-      });
+      } catch (error) {
+        output.innerHTML = "Unable to retrieve address.";
+      }
     },
     () => {
       output.innerHTML = "Location permission denied.";
     }
   );
 }
-
-function calculateRoute() {
-  const pickup = document.getElementById("pickup").value;
-  const dropoff = document.getElementById("dropoff").value;
-
-  if (!pickup || !dropoff) {
-    document.getElementById("fareResult").innerText =
-      "Please enter both locations.";
-    return;
-  }
-
-  const service = new google.maps.DirectionsService();
-
-  service.route(
-    {
-      origin: pickup,
-      destination: dropoff,
-      travelMode: "DRIVING",
-    },
-    (result, status) => {
-      if (status !== "OK") {
-        document.getElementById("fareResult").innerText =
-          "Route unavailable.";
-        return;
-      }
-
-      const leg = result.routes[0].legs[0];
-      const miles = leg.distance.value / 1609.34;
-      const minutes = leg.duration.value / 60;
-
-      const ratePerMile = 3.5;
-      const ratePerMinute = 0.75;
-      const peak = new Date().getHours() >= 21;
-
-      let total = (miles * ratePerMile) + (minutes * ratePerMinute);
-      if (peak) total *= 1.25;
-
-      document.getElementById("fareResult").innerHTML = `
-        <p>${miles.toFixed(1)} miles • ${minutes.toFixed(0)} mins</p>
-        <p>${peak ? "Peak Pricing" : "Standard Pricing"}</p>
-        <p><strong>$${total.toFixed(2)}</strong></p>
-      `;
-    }
-  );
-}
 </script>
+
 
 </body>
 </html>
