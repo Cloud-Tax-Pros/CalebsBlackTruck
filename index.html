@@ -220,11 +220,7 @@ footer {
       <small id="currentAddress"></small>
     </div>
 
-    <div class="suggestion airport" onclick="setPickup('Hartsfield-Jackson Atlanta International Airport')">
-      ✈️ Hartsfield-Jackson Atlanta International Airport
-    </div>
-  </div>
-</div>
+
 
   <label>Dropoff Location</label>
   <input
@@ -240,28 +236,25 @@ footer {
   <div id="map"></div>
 </div>
 
-  <script>
+ <script>
 let pickupAutocomplete;
-let dropoffAutocomplete;
 
 function initAutocomplete() {
   pickupAutocomplete = new google.maps.places.Autocomplete(
     document.getElementById("pickup"),
-    { types: ["geocode"] }
+    {
+      types: ["geocode", "establishment"], // KEY LINE
+      fields: ["formatted_address", "name", "types"]
+    }
   );
 
-  dropoffAutocomplete = new google.maps.places.Autocomplete(
-    document.getElementById("dropoff"),
-    { types: ["geocode"] }
-  );
+  pickupAutocomplete.addListener("place_changed", () => {
+    const place = pickupAutocomplete.getPlace();
+    console.log(place.name, place.types);
+  });
 }
 
-// Wait until Google Maps loads
-window.addEventListener("load", () => {
-  if (window.google) {
-    initAutocomplete();
-  }
-});
+window.addEventListener("load", initAutocomplete);
 </script>
 
 <!-- SCREEN 2: DATE / TIME -->
