@@ -236,25 +236,40 @@ footer {
   <div id="map"></div>
 </div>
 
- <script>
+<script>
 let pickupAutocomplete;
+let dropoffAutocomplete;
+
+let pickupIsAirport = false;
+let dropoffIsAirport = false;
 
 function initAutocomplete() {
   pickupAutocomplete = new google.maps.places.Autocomplete(
     document.getElementById("pickup"),
     {
-      types: ["geocode", "establishment"], // KEY LINE
-      fields: ["formatted_address", "name", "types"]
+      types: ["geocode", "establishment"],
+      fields: ["formatted_address", "types"]
+    }
+  );
+
+  dropoffAutocomplete = new google.maps.places.Autocomplete(
+    document.getElementById("dropoff"),
+    {
+      types: ["geocode", "establishment"],
+      fields: ["formatted_address", "types"]
     }
   );
 
   pickupAutocomplete.addListener("place_changed", () => {
     const place = pickupAutocomplete.getPlace();
-    console.log(place.name, place.types);
+    pickupIsAirport = place.types?.includes("airport") || false;
+  });
+
+  dropoffAutocomplete.addListener("place_changed", () => {
+    const place = dropoffAutocomplete.getPlace();
+    dropoffIsAirport = place.types?.includes("airport") || false;
   });
 }
-
-window.addEventListener("load", initAutocomplete);
 </script>
 
 <!-- SCREEN 2: DATE / TIME -->
@@ -549,6 +564,28 @@ function setPickup(value) {
   document.getElementById("pickup-suggestions").style.display = "none";
 }
 </script>
+  <script>
+function calculateFare(miles, minutes) {
+  const PER_MILE = 3.5;
+  const PER_MINUTE = 0.75;
+  const AIRPORT_FEE = 25; // airport surcharge
+  const PEAK_MULTIPLIER = new Date().getHours() >= 21 ? 1.25 : 1;
+
+  let total =
+    (miles * PER_MILE) +
+    (minutes * PER_MINUTE);
+
+  // Airport pricing (pickup OR dropoff)
+  if (pickupIsAirport || dropoffIsAirport) {
+    total += AIRPORT_FEE;
+  }
+
+  total *= PEAK_MULTIPLIER;
+
+  return total.toFixed(2);
+}
+</script>
+
 
 
 </body>
