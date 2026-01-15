@@ -13,11 +13,48 @@
 <!-- GOOGLE MAPS -->
 <script
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM&libraries=places"
-  defer>
-</script>
+  defer
+></script>
 
 <!-- FONTS -->
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+.pickup-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#useLocation {
+  background: #111;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#useLocation:hover {
+  border-color: #8b0000;
+}
+
+/* Google dropdown */
+.pac-container {
+  background: #000;
+  color: #fff;
+  border: 1px solid #444;
+  z-index: 9999;
+}
+
+.pac-item {
+  padding: 10px;
+  border-bottom: 1px solid #333;
+}
+
+.pac-item:hover {
+  background: #111;
+}
+</style>
 
 <style>
 /* ===== GLOBAL ===== */
@@ -135,6 +172,22 @@ footer {
 <!-- SCREEN 1: ROUTE -->
 <div class="screen active" id="screen-route">
   <h2>See Your Quote Before You Book</h2>
+  <label>Pickup Location</label>
+
+<div class="pickup-wrapper">
+  <input
+    type="text"
+    id="pickup"
+    placeholder="Enter pickup location"
+    autocomplete="off"
+    required
+  />
+
+  <button type="button" id="useLocation">
+    📍 Set as my current location
+  </button>
+</div>
+
 
   <input id="pickup" placeholder="Pickup address">
   <button type="button"
@@ -358,6 +411,50 @@ function openNavigation(address) {
 </script>
 
 
+<script>
+let pickupAutocomplete;
+
+function initAutocomplete() {
+  pickupAutocomplete = new google.maps.places.Autocomplete(
+    document.getElementById("pickup"),
+    {
+      types: ["geocode"],
+      componentRestrictions: { country: "us" }
+    }
+  );
+}
+
+window.addEventListener("load", initAutocomplete);
+
+// CURRENT LOCATION BUTTON
+document.getElementById("useLocation").addEventListener("click", () => {
+  if (!navigator.geolocation) {
+    alert("Geolocation not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=YOUR_API_KEY`
+      );
+
+      const data = await response.json();
+
+      if (data.results && data.results.length > 0) {
+        document.getElementById("pickup").value =
+          data.results[0].formatted_address;
+      } else {
+        alert("Unable to determine address");
+      }
+    },
+    () => alert("Location permission denied")
+  );
+});
+</script>
 
 </body>
 </html>
