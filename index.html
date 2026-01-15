@@ -191,7 +191,14 @@ footer {
   <p id="summary"></p>
   <h3 id="total"></h3>
 
-  <button>BOOK THIS TRIP</button>
+  <button onclick="payNow()">BOOK THIS TRIP</button>
+
+<script>
+function payNow() {
+  window.location.href = "PASTE_YOUR_STRIPE_PAYMENT_LINK_HERE";
+}
+</script>
+
 </div>
 
 <footer>
