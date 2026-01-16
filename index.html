@@ -5,115 +5,58 @@
 <title>Caleb’s Black Truck | Book a Chauffeur</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta name="description" content="Caleb’s Black Truck — Private Chauffeur Service. Book professional luxury transportation in Atlanta.">
+<meta name="description" content="Caleb’s Black Truck — Private Chauffeur Service in Atlanta.">
 
 <!-- FAVICON -->
 <link rel="icon" href="black truck.jpg">
 
-<!-- GOOGLE MAPS -->
+<!-- GOOGLE FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- GOOGLE MAPS (ONLY ONE SCRIPT) -->
 <script
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM&libraries=places&callback=initAutocomplete"
-  async
+  src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"
+  defer
 ></script>
 
-
-<!-- FONTS -->
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
-.pickup-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-#useLocation {
-  background: #111;
-  color: #fff;
-  border: 1px solid #444;
-  padding: 10px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-#useLocation:hover {
-  border-color: #8b0000;
-}
-
-/* Google dropdown */
-.pac-container {
-  background: #000;
-  color: #fff;
-  border: 1px solid #444;
-  z-index: 9999;
-}
-
-.pac-item {
-  padding: 10px;
-  border-bottom: 1px solid #333;
-}
-
-.pac-item:hover {
-  background: #111;
-}
-</style>
-
-<style>
-/* ===== GLOBAL ===== */
 body {
   margin: 0;
-  font-family: Inter, Arial, sans-serif;
   background: #000;
   color: #fff;
-}
-  .pickup-wrapper {
-  position: relative;
+  font-family: Inter, Arial, sans-serif;
 }
 
-.suggestions {
-  position: absolute;
-  width: 100%;
-  background: #000;
-  border: 1px solid #444;
-  z-index: 9999;
-}
-
-.suggestion {
-  padding: 12px;
+.header {
+  text-align: center;
+  padding: 20px;
   border-bottom: 1px solid #333;
-  cursor: pointer;
 }
 
-.suggestion:hover {
-  background: #111;
+.header img {
+  max-width: 180px;
 }
 
-.suggestion small {
-  display: block;
-  font-size: 12px;
-  color: #aaa;
-}
-
-
-h1, h2 {
+h2 {
   font-family: "Playfair Display", serif;
 }
 
-.screen {
-  display: none;
-  padding: 24px;
+.container {
+  padding: 20px;
 }
 
-.screen.active {
+label {
   display: block;
+  margin-top: 18px;
 }
 
 input, button {
   width: 100%;
   padding: 14px;
-  margin-top: 12px;
   font-size: 16px;
   border-radius: 6px;
   border: none;
+  margin-top: 8px;
 }
 
 input {
@@ -133,336 +76,119 @@ button:hover {
   background: #a00000;
 }
 
-/* ===== HEADER ===== */
-.header {
-  text-align: center;
-  padding: 20px;
-  border-bottom: 1px solid #333;
+/* PICKUP HELPER */
+.pickup-wrapper {
+  position: relative;
 }
 
-.header img {
-  max-width: 180px;
-  margin-bottom: 10px;
-}
-
-.header span {
-  display: block;
-  font-size: 14px;
-  color: #aaa;
-}
-
-/* ===== MAP ===== */
-#map {
-  height: 280px;
-  margin-top: 16px;
-  border-radius: 10px;
-}
-
-/* ===== VEHICLES ===== */
-.vehicle {
-  border: 2px solid #333;
-  padding: 16px;
-  margin-top: 14px;
-  border-radius: 10px;
-  display: flex;
-  gap: 15px;
-  align-items: center;
+.helper-option {
+  display: none;
+  padding: 12px;
+  background: #111;
+  border: 1px solid #444;
   cursor: pointer;
+  margin-top: 4px;
 }
 
-.vehicle img {
-  width: 120px;
-  border-radius: 6px;
+.helper-option:hover {
+  background: #1a1a1a;
 }
 
-.vehicle.active {
-  border-color: #8b0000;
+/* GOOGLE AUTOCOMPLETE */
+.pac-container {
+  z-index: 9999;
+  background: #000;
+  color: #fff;
+  border: 1px solid #444;
 }
 
-/* ===== FOOTER ===== */
-footer {
-  text-align: center;
-  padding: 20px;
-  font-size: 13px;
-  color: #777;
+#map {
+  height: 260px;
+  margin-top: 20px;
+  border-radius: 10px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
-  <img src="CalebsBlackTruck.png" alt="Caleb’s Black Truck Logo">
-  <img src="black truck.jpg" alt="black truck">
-  <span>Private Chauffeur Service • Atlanta</span>
+  <img src="CalebsBlackTruck.png" alt="Caleb’s Black Truck">
+  <p>Private Chauffeur Service • Atlanta</p>
 </div>
-  
 
-<!-- SCREEN 1: ROUTE -->
-<div class="screen active" id="screen-route">
+<div class="container">
+
   <h2>See Your Quote Before You Book</h2>
 
- <label>Pickup Location</label>
-
-<div class="pickup-wrapper">
-  <input
-    id="pickup"
-    type="text"
-    placeholder="Enter Pickup Location"
-    autocomplete="off"
-  />
-
-  <!-- CUSTOM DROPDOWN -->
-  <div id="pickup-suggestions" class="suggestions">
-    <div class="suggestion" onclick="useCurrentLocation()">
+  <!-- PICKUP -->
+  <label>Pickup Location</label>
+  <div class="pickup-wrapper">
+    <input id="pickup" placeholder="Enter Pickup Location" autocomplete="off">
+    <div id="pickup-helper" class="helper-option" onclick="useCurrentLocation()">
       📍 <strong>Set As My Current Location</strong>
-      <small id="currentAddress"></small>
+      <div id="currentAddress" style="font-size:12px;color:#aaa"></div>
     </div>
+  </div>
 
-
-
+  <!-- DROPOFF -->
   <label>Dropoff Location</label>
-  <input
-    type="text"
-    id="dropoff"
-    placeholder="Enter dropoff location"
-    autocomplete="off"
-    required
-  />
-    <div id="dropoffSuggestions" class="suggestions"></div>
+  <input id="dropoff" placeholder="Enter Dropoff Location" autocomplete="off">
 
-  <button onclick="confirmRoute()">CONFIRM YOUR ROUTE</button>
+  <button onclick="calculateRoute()">CONFIRM YOUR ROUTE</button>
 
   <div id="map"></div>
+  <div id="fare" style="margin-top:20px;font-size:18px;"></div>
+
 </div>
 
 <script>
-let pickupAutocomplete;
-let dropoffAutocomplete;
+let pickupAutocomplete, dropoffAutocomplete;
+let map, directionsService, directionsRenderer;
 
-let pickupIsAirport = false;
-let dropoffIsAirport = false;
-
+/* INIT AUTOCOMPLETE */
 function initAutocomplete() {
   pickupAutocomplete = new google.maps.places.Autocomplete(
     document.getElementById("pickup"),
-    {
-      types: ["geocode", "establishment"],
-      fields: ["formatted_address", "types"]
-    }
+    { types: ["geocode", "establishment"], componentRestrictions: { country: "us" } }
   );
 
   dropoffAutocomplete = new google.maps.places.Autocomplete(
     document.getElementById("dropoff"),
-    {
-      types: ["geocode", "establishment"],
-      fields: ["formatted_address", "types"]
-    }
+    { types: ["geocode", "establishment"], componentRestrictions: { country: "us" } }
   );
+
+  document.getElementById("pickup").addEventListener("focus", () => {
+    document.getElementById("pickup-helper").style.display = "block";
+  });
 
   pickupAutocomplete.addListener("place_changed", () => {
-    const place = pickupAutocomplete.getPlace();
-    pickupIsAirport = place.types?.includes("airport") || false;
-  });
-
-  dropoffAutocomplete.addListener("place_changed", () => {
-    const place = dropoffAutocomplete.getPlace();
-    dropoffIsAirport = place.types?.includes("airport") || false;
+    document.getElementById("pickup-helper").style.display = "none";
   });
 }
-</script>
-  <script>
-function initDropoffSearch() {
-  const service = new google.maps.places.AutocompleteService();
-  const input = document.getElementById("dropoff");
-  const list = document.getElementById("dropoffSuggestions");
 
-  input.addEventListener("input", () => {
-    const value = input.value;
-    if (!value) {
-      list.style.display = "none";
-      return;
-    }
-
-    service.getPlacePredictions(
-      {
-        input: value,
-        types: ["geocode", "airport"],
-        componentRestrictions: { country: "us" }
-      },
-      (predictions, status) => {
-        list.innerHTML = "";
-        if (!predictions || status !== "OK") return;
-
-        predictions.forEach(p => {
-          const div = document.createElement("div");
-          div.className = "suggestion-item";
-          div.innerHTML = 
-            <span class="icon">✈️</span>
-            <div>
-              <strong>${p.structured_formatting.main_text}</strong><br>
-              <small>${p.structured_formatting.secondary_text || ""}</small>
-            </div>
-          ;
-          div.onclick = () => {
-            input.value = p.description;
-            list.style.display = "none";
-          };
-          list.appendChild(div);
-        });
-
-        list.style.display = "block";
-      }
+/* CURRENT LOCATION */
+async function useCurrentLocation() {
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const res = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${pos.coords.latitude},${pos.coords.longitude}&key=YOUR_API_KEY`
     );
-  });
-}
-
-// initialize after page load
-window.addEventListener("load", initDropoffSearch);
-</script>
-
-
-<!-- SCREEN 2: DATE / TIME -->
-<div class="screen" id="screen-datetime">
-  <h2>When Should We Pick You Up?</h2>
-
-  <input type="date" id="date">
-  <input type="time" id="time">
-
-  <button onclick="confirmDate()">CONFIRM PICKUP</button>
-</div>
-
-<!-- SCREEN 3: FLIGHT -->
-<div class="screen" id="screen-flight">
-  <h2>Add Your Commercial Flight</h2>
-
-  <input id="flight" placeholder="Flight number (optional)">
-
-  <button onclick="confirmFlight()">ADD FLIGHT</button>
-  <button onclick="confirmFlight()">SKIP</button>
-</div>
-
-<!-- SCREEN 4: VEHICLE -->
-<div class="screen" id="screen-vehicle">
-  <h2>Select Your Vehicle</h2>
-
-  <div class="vehicle" onclick="selectVehicle('SUV – 6 PAX', 1)">
-    <img src="suv.png">
-    <div>
-      <strong>SUV – 6 PAX</strong><br>
-      $<span id="price-suv"></span>
-    </div>
-  </div>
-
-  <div class="vehicle" onclick="selectVehicle('Executive SUV – 6 PAX', 1.1)">
-    <img src="exec-suv.png">
-    <div>
-      <strong>Executive SUV – 6 PAX</strong><br>
-      $<span id="price-exec"></span>
-    </div>
-  </div>
-
-  <button onclick="confirmVehicle()">CONFIRM VEHICLE</button>
-</div>
-
-<!-- SCREEN 5: SUMMARY -->
-<div class="screen" id="screen-summary">
-  <h2>Your Trip</h2>
-
-  <p id="summary"></p>
-  <h3 id="total"></h3>
-
-  <button onclick="payNow()">BOOK THIS TRIP</button>
-
-<script>
-function payNow() {
-  window.location.href = "PASTE_YOUR_STRIPE_PAYMENT_LINK_HERE";
-}
-</script>
-
-</div>
-
-<footer>
-  © Caleb’s Black Truck • Private • Trusted • Atlanta
-</footer>
-  <script>
-let pickupAutocomplete;
-let dropoffAutocomplete;
-
-function initAutocomplete() {
-  pickupAutocomplete = new google.maps.places.Autocomplete(
-    document.getElementById("pickup"),
-    { types: ["geocode"] }
-  );
-
-  dropoffAutocomplete = new google.maps.places.Autocomplete(
-    document.getElementById("dropoff"),
-    { types: ["geocode"] }
-  );
-}
-
-// Wait until Google Maps loads
-window.addEventListener("load", () => {
-  if (window.google) {
-    initAutocomplete();
-  }
-});
-</script>
-
-
-<script>
-let map, directionsService, directionsRenderer;
-let pickupAutocomplete, dropoffAutocomplete;
-let miles = 0, minutes = 0;
-
-/* ===== GOOGLE AUTOCOMPLETE ===== */
-function initAutocomplete() {
-  pickupAutocomplete = new google.maps.places.Autocomplete(
-    document.getElementById("pickup"),
-    { types: ["geocode"], componentRestrictions: { country: "us" } }
-  );
-
-  dropoffAutocomplete = new google.maps.places.Autocomplete(
-    document.getElementById("dropoff"),
-    { types: ["geocode"], componentRestrictions: { country: "us" } }
-  );
-}
-
-/* ===== CURRENT LOCATION ===== */
-document.addEventListener("DOMContentLoaded", () => {
-  initAutocomplete();
-
-  document.getElementById("useLocation").addEventListener("click", () => {
-    if (!navigator.geolocation) {
-      alert("Geolocation not supported");
-      return;
+    const data = await res.json();
+    if (data.results.length) {
+      document.getElementById("pickup").value = data.results[0].formatted_address;
+      document.getElementById("currentAddress").innerText = data.results[0].formatted_address;
+      document.getElementById("pickup-helper").style.display = "none";
     }
-
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-
-      const res = await fetch(
-        https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM
-      );
-
-      const data = await res.json();
-      if (data.results.length) {
-        document.getElementById("pickup").value =
-          data.results[0].formatted_address;
-      }
-    });
   });
-});
+}
 
-/* ===== ROUTE + MAP ===== */
-function confirmRoute() {
+/* ROUTE + FARE */
+function calculateRoute() {
   const pickup = document.getElementById("pickup").value;
   const dropoff = document.getElementById("dropoff").value;
 
   if (!pickup || !dropoff) {
-    alert("Please enter pickup and dropoff locations");
+    alert("Enter pickup and dropoff locations");
     return;
   }
 
@@ -470,278 +196,50 @@ function confirmRoute() {
   directionsRenderer = new google.maps.DirectionsRenderer();
 
   map = new google.maps.Map(document.getElementById("map"), {
-    zoom: 12,
-    center: { lat: 33.749, lng: -84.388 }
+    center: { lat: 33.749, lng: -84.388 },
+    zoom: 12
   });
 
   directionsRenderer.setMap(map);
 
   directionsService.route(
-    {
-      origin: pickup,
-      destination: dropoff,
-      travelMode: "DRIVING"
-    },
+    { origin: pickup, destination: dropoff, travelMode: "DRIVING" },
     (result, status) => {
       if (status !== "OK") {
-        alert("Route not found");
+        alert("Unable to calculate route");
         return;
       }
 
       directionsRenderer.setDirections(result);
-
       const leg = result.routes[0].legs[0];
-      miles = leg.distance.value / 1609.34;
-      minutes = leg.duration.value / 60;
 
-      alert(
-        Distance: ${miles.toFixed(1)} miles\nTime: ${minutes.toFixed(0)} mins
-      );
-    }
-  );
-}
-</script>
+      const miles = leg.distance.value / 1609.34;
+      const minutes = leg.duration.value / 60;
 
-  <script>
-function openNavigation(address) {
-  if (!address) {
-    alert("Please enter a pickup address first.");
-    return;
-  }
+      const PER_MILE = 3.5;
+      const PER_MINUTE = 0.75;
+      const PEAK = new Date().getHours() >= 21 ? 1.25 : 1;
 
-  const encodedAddress = encodeURIComponent(address);
+      const total = ((miles * PER_MILE) + (minutes * PER_MINUTE)) * PEAK;
 
-  // This opens Google Maps navigation
-  const mapsUrl = https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}&travelmode=driving;
-
-  window.open(mapsUrl, "_blank");
-}
-</script>
-
-
-<script>
-let pickupAutocomplete;
-
-function initAutocomplete() {
-  pickupAutocomplete = new google.maps.places.Autocomplete(
-    document.getElementById("pickup"),
-    {
-      types: ["geocode"],
-      componentRestrictions: { country: "us" }
+      document.getElementById("fare").innerHTML = `
+        <strong>Distance:</strong> ${miles.toFixed(1)} miles<br>
+        <strong>Time:</strong> ${minutes.toFixed(0)} minutes<br>
+        <strong>Estimated Fare:</strong> $${total.toFixed(2)}
+      `;
     }
   );
 }
 
-window.addEventListener("load", initAutocomplete);
-
-// CURRENT LOCATION BUTTON
-document.getElementById("useLocation").addEventListener("click", () => {
-  if (!navigator.geolocation) {
-    alert("Geolocation not supported");
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    async (position) => {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-
-      const response = await fetch(
-        https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=YOUR_API_KEY
-      );
-
-      const data = await response.json();
-
-      if (data.results && data.results.length > 0) {
-        document.getElementById("pickup").value =
-          data.results[0].formatted_address;
-      } else {
-        alert("Unable to determine address");
-      }
-    },
-    () => alert("Location permission denied")
-  );
-});
-</script>
-  <script>
-let autocomplete;
-
-function initAutocomplete() {
-  autocomplete = new google.maps.places.Autocomplete(
-    document.getElementById("pickup"),
-    {
-      types: ["geocode"],
-      componentRestrictions: { country: "us" }
-    }
-  );
-
-  autocomplete.addListener("place_changed", () => {
-    document.getElementById("pickup-suggestions").style.display = "none";
-  });
-
-  document.getElementById("pickup").addEventListener("focus", () => {
-    document.getElementById("pickup-suggestions").style.display = "block";
-  });
-}
-
-/* ===== CURRENT LOCATION ===== */
-async function useCurrentLocation() {
-  if (!navigator.geolocation) {
-    alert("Geolocation not supported");
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(async (pos) => {
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-
-    const res = await fetch(
-      https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM
-    );
-
-    const data = await res.json();
-    if (data.results.length) {
-      document.getElementById("pickup").value =
-        data.results[0].formatted_address;
-
-      document.getElementById("pickup-suggestions").style.display = "none";
-    }
-  });
-}
-
-/* QUICK SET */
-function setPickup(value) {
-  document.getElementById("pickup").value = value;
-  document.getElementById("pickup-suggestions").style.display = "none";
-}
-</script>
-  <script>
-function calculateFare(miles, minutes) {
-  const PER_MILE = 3.5;
-  const PER_MINUTE = 0.75;
-  const AIRPORT_FEE = 25; // airport surcharge
-  const PEAK_MULTIPLIER = new Date().getHours() >= 21 ? 1.25 : 1;
-
-  let total =
-    (miles * PER_MILE) +
-    (minutes * PER_MINUTE);
-
-  // Airport pricing (pickup OR dropoff)
-  if (pickupIsAirport || dropoffIsAirport) {
-    total += AIRPORT_FEE;
-  }
-
-  total *= PEAK_MULTIPLIER;
-
-  return total.toFixed(2);
-}
-</script>
-
-<script>
-let pickupAutocomplete;
-
-function initAutocomplete() {
-  pickupAutocomplete = new google.maps.places.Autocomplete(
-    document.getElementById("pickup"),
-    {
-      types: ["geocode"],
-      componentRestrictions: { country: "us" }
-    }
-  );
-}
-
-window.addEventListener("load", initAutocomplete);
-
-// CURRENT LOCATION BUTTON
-document.getElementById("useLocation").addEventListener("click", () => {
-  if (!navigator.geolocation) {
-    alert("Geolocation not supported");
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    async (position) => {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-
-      const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=YOUR_API_KEY`
-      );
-
-      const data = await response.json();
-
-      if (data.results && data.results.length > 0) {
-        document.getElementById("pickup").value =
-          data.results[0].formatted_address;
-      } else {
-        alert("Unable to determine address");
-      }
-    },
-    () => alert("Location permission denied")
-  );
-});
-</script>
-
-<script>
-let pickupAutocomplete;
-
-function initPickupAutocomplete() {
-  pickupAutocomplete = new google.maps.places.Autocomplete(
-    document.getElementById("pickup"),
-    {
-      types: ["geocode", "establishment"],
-      componentRestrictions: { country: "us" }
-    }
-  );
-
-  // Show helper when focused
-  document.getElementById("pickup").addEventListener("focus", () => {
-    document.getElementById("pickup-helper").style.display = "block";
-  });
-
-  // Hide helper after selection
-  pickupAutocomplete.addListener("place_changed", () => {
-    document.getElementById("pickup-helper").style.display = "none";
-  });
-}
-
-// Wait until Google loads
+/* WAIT FOR GOOGLE */
 window.addEventListener("load", () => {
   const wait = setInterval(() => {
     if (window.google && google.maps && google.maps.places) {
       clearInterval(wait);
-      initPickupAutocomplete();
+      initAutocomplete();
     }
   }, 100);
 });
-
-/* CURRENT LOCATION */
-async function useCurrentLocation() {
-  if (!navigator.geolocation) {
-    alert("Geolocation not supported");
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(async (pos) => {
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-
-    const res = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=YOUR_API_KEY`
-    );
-    const data = await res.json();
-
-    if (data.results && data.results.length) {
-      document.getElementById("pickup").value =
-        data.results[0].formatted_address;
-
-      document.getElementById("currentAddress").innerText =
-        data.results[0].formatted_address;
-
-      document.getElementById("pickup-helper").style.display = "none";
-    }
-  }, () => alert("Location permission denied"));
-}
 </script>
 
 </body>
