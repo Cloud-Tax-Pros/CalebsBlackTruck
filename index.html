@@ -682,6 +682,67 @@ document.getElementById("useLocation").addEventListener("click", () => {
 });
 </script>
 
+<script>
+let pickupAutocomplete;
+
+function initPickupAutocomplete() {
+  pickupAutocomplete = new google.maps.places.Autocomplete(
+    document.getElementById("pickup"),
+    {
+      types: ["geocode", "establishment"],
+      componentRestrictions: { country: "us" }
+    }
+  );
+
+  // Show helper when focused
+  document.getElementById("pickup").addEventListener("focus", () => {
+    document.getElementById("pickup-helper").style.display = "block";
+  });
+
+  // Hide helper after selection
+  pickupAutocomplete.addListener("place_changed", () => {
+    document.getElementById("pickup-helper").style.display = "none";
+  });
+}
+
+// Wait until Google loads
+window.addEventListener("load", () => {
+  const wait = setInterval(() => {
+    if (window.google && google.maps && google.maps.places) {
+      clearInterval(wait);
+      initPickupAutocomplete();
+    }
+  }, 100);
+});
+
+/* CURRENT LOCATION */
+async function useCurrentLocation() {
+  if (!navigator.geolocation) {
+    alert("Geolocation not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+
+    const res = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=YOUR_API_KEY`
+    );
+    const data = await res.json();
+
+    if (data.results && data.results.length) {
+      document.getElementById("pickup").value =
+        data.results[0].formatted_address;
+
+      document.getElementById("currentAddress").innerText =
+        data.results[0].formatted_address;
+
+      document.getElementById("pickup-helper").style.display = "none";
+    }
+  }, () => alert("Location permission denied"));
+}
+</script>
 
 </body>
 </html>
