@@ -316,6 +316,82 @@ function payNow() {
   © Caleb’s Black Truck • Private • Trusted • Atlanta
 </footer>
   
+<script>
+let autocompleteService;
+let geocoder;
+
+function initPickupSearch() {
+  autocompleteService = new google.maps.places.AutocompleteService();
+  geocoder = new google.maps.Geocoder();
+
+  const input = document.getElementById("pickup");
+  const list = document.getElementById("pickupSuggestions");
+
+  input.addEventListener("input", () => {
+    const value = input.value;
+    if (!value) {
+      list.style.display = "none";
+      return;
+    }
+
+    autocompleteService.getPlacePredictions(
+      {
+        input: value,
+        types: ["geocode", "airport"],
+        componentRestrictions: { country: "us" }
+      },
+      (predictions, status) => {
+        list.innerHTML = "";
+        if (!predictions || status !== "OK") return;
+
+        // 🔝 Current location option
+        const current = document.createElement("div");
+        current.className = "suggestion-item";
+        current.innerHTML = `<span class="icon">📍</span> Set As My Current Location`;
+        current.onclick = getCurrentLocation;
+        list.appendChild(current);
+
+        predictions.forEach(p => {
+          const div = document.createElement("div");
+          div.className = "suggestion-item";
+          div.innerHTML = `
+            <span class="icon">✈️</span>
+            <div>
+              <strong>${p.structured_formatting.main_text}</strong><br>
+              <small>${p.structured_formatting.secondary_text || ""}</small>
+            </div>
+          `;
+          div.onclick = () => {
+            input.value = p.description;
+            list.style.display = "none";
+          };
+          list.appendChild(div);
+        });
+
+        list.style.display = "block";
+      }
+    );
+  });
+}
+
+function getCurrentLocation() {
+  navigator.geolocation.getCurrentPosition(pos => {
+    const latlng = {
+      lat: pos.coords.latitude,
+      lng: pos.coords.longitude
+    };
+
+    geocoder.geocode({ location: latlng }, (results) => {
+      if (results[0]) {
+        document.getElementById("pickup").value = results[0].formatted_address;
+        document.getElementById("pickupSuggestions").style.display = "none";
+      }
+    });
+  });
+}
+
+window.addEventListener("load", initPickupSearch);
+</script>
 
 
 
