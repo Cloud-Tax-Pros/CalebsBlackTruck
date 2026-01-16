@@ -227,7 +227,7 @@ footer {
 
   <!-- CUSTOM DROPDOWN -->
   <div id="pickup-helper" class="suggestions">
-  <div class="suggestion" id="useCurrentLocation()">
+  <div class="suggestion" id="useCurrentLocation">
     📍 <strong>Set As My Current Location</strong>
     <small id="currentAddress">Use GPS</small>
   </div>
@@ -371,31 +371,6 @@ function initAutocomplete() {
 
   pickupAutocomplete.addListener("place_changed", () => {
     document.getElementById("pickup-helper").style.display = "none";
-  });
-}
-</script>
-<script>
-async function useCurrentLocation() {
-  if (!navigator.geolocation) {
-    alert("Geolocation not supported");
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(async (pos) => {
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-
-    const res = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM`
-    );
-
-    const data = await res.json();
-
-    if (data.results.length) {
-      document.getElementById("pickup").value =
-        data.results[0].formatted_address;
-      document.getElementById("pickup-helper").style.display = "none";
-    }
   });
 }
 </script>
