@@ -59,6 +59,14 @@
 
 <style>
 /* ===== GLOBAL ===== */
+  #pickup-helper {
+  display: none;
+}
+
+#pickup:focus + #pickup-helper {
+  display: block;
+}
+
 body {
   margin: 0;
   font-family: Inter, Arial, sans-serif;
@@ -214,11 +222,12 @@ footer {
   />
 
   <!-- CUSTOM DROPDOWN -->
-  <div id="pickup-suggestions" class="suggestions">
-    <div class="suggestion" onclick="useCurrentLocation()">
-      📍 <strong>Set As My Current Location</strong>
-      <small id="currentAddress"></small>
-    </div>
+  <div id="pickup-helper" class="suggestions">
+  <div class="suggestion" onclick="useCurrentLocation()">
+    📍 <strong>Set As My Current Location</strong>
+    <small id="currentAddress"></small>
+  </div>
+</div>
 
 
 
