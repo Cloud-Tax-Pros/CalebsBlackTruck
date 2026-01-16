@@ -419,6 +419,36 @@ document.getElementById("useLocation").addEventListener("click", () => {
   );
 });
 </script>
+<script>
+let pickupFilledByGPS = false;
+
+document.getElementById("pickup").addEventListener("focus", () => {
+  if (pickupFilledByGPS) return;
+
+  if (!navigator.geolocation) return;
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+
+    try {
+      const res = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM`
+      );
+      const data = await res.json();
+
+      if (data.results && data.results.length > 0) {
+        document.getElementById("pickup").value =
+          data.results[0].formatted_address;
+
+        pickupFilledByGPS = true;
+      }
+    } catch (e) {
+      console.log("GPS lookup failed");
+    }
+  });
+});
+</script>
 
 
 </body>
