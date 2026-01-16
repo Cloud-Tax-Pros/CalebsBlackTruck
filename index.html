@@ -214,23 +214,22 @@ footer {
 <!-- SCREEN 1: ROUTE -->
 <div class="screen active" id="screen-route">
   <h2>See Your Quote Before You Book</h2>
-
- <label>Pickup Location</label>
+<label>Pickup Location</label>
 
 <div class="pickup-wrapper">
   <input
-    id="pickup"
     type="text"
-    placeholder="Enter Pickup Location"
+    id="pickup"
+    placeholder="Enter pickup location"
     autocomplete="off"
+    required
   />
 
-  <!-- CUSTOM DROPDOWN -->
-  <div id="pickup-helper" class="suggestions">
-  <div class="suggestion" id="useCurrentLocation">
-    📍 <strong>Set As My Current Location</strong>
-    <small id="currentAddress">Use GPS</small>
-  </div>
+  <button type="button" id="useLocation">
+    📍 Set as my current location
+  </button>
+</div>
+
 </div>
 
 
