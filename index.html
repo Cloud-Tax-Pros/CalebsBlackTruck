@@ -66,6 +66,10 @@
 #pickup:focus ~ #pickup-helper {
   display: block;
 }
+  .pac-container {
+  z-index: 10000 !important;
+}
+
 
 body {
   margin: 0;
@@ -223,9 +227,9 @@ footer {
 
   <!-- CUSTOM DROPDOWN -->
   <div id="pickup-helper" class="suggestions">
-  <div class="suggestion" onclick="useCurrentLocation()">
+  <div class="suggestion" id="useCurrentLocation()">
     📍 <strong>Set As My Current Location</strong>
-    <small id="currentAddress"></small>
+    <small id="currentAddress">Use GPS</small>
   </div>
 </div>
 
@@ -313,6 +317,35 @@ function payNow() {
   © Caleb’s Black Truck • Private • Trusted • Atlanta
 </footer>
   
+<script>
+document.getElementById("useCurrentLocation").addEventListener("click", async () => {
+  if (!navigator.geolocation) {
+    alert("Geolocation not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+
+    const response = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM`
+    );
+
+    const data = await response.json();
+
+    if (data.results && data.results.length > 0) {
+      document.getElementById("pickup").value =
+        data.results[0].formatted_address;
+
+      document.getElementById("pickup-helper").style.display = "none";
+    } else {
+      alert("Unable to determine address");
+    }
+  },
+  () => alert("Location permission denied"));
+});
+</script>
 
 
 <script>
