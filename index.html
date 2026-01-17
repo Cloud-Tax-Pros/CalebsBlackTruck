@@ -525,6 +525,57 @@ document.getElementById("pickup").addEventListener("focus", () => {
   });
 });
 </script>
+<script>
+let map, directionsService, directionsRenderer;
+
+/* SCREEN SWITCHER */
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s =>
+    s.classList.remove("active")
+  );
+  document.getElementById(id).classList.add("active");
+}
+
+/* CONFIRM ROUTE */
+function confirmRoute() {
+  const pickup = document.getElementById("pickup").value.trim();
+  const dropoff = document.getElementById("dropoff").value.trim();
+
+  if (!pickup || !dropoff) {
+    alert("Please enter both pickup and dropoff locations");
+    return;
+  }
+
+  directionsService = new google.maps.DirectionsService();
+  directionsRenderer = new google.maps.DirectionsRenderer();
+
+  map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 12,
+    center: { lat: 33.749, lng: -84.388 } // Atlanta default
+  });
+
+  directionsRenderer.setMap(map);
+
+  directionsService.route(
+    {
+      origin: pickup,
+      destination: dropoff,
+      travelMode: google.maps.TravelMode.DRIVING
+    },
+    (result, status) => {
+      if (status !== "OK") {
+        alert("Route not found. Please check addresses.");
+        return;
+      }
+
+      directionsRenderer.setDirections(result);
+
+      // Move to next screen
+      show("screen-datetime");
+    }
+  );
+}
+</script>
 
 
 </body>
