@@ -607,7 +607,27 @@ function confirmFlight() {
   document.getElementById("screen-vehicle").classList.add("active");
 }
 </script>
+  
 
+<script>
+function confirmVehicle() {
+  // Move to Summary screen
+  show("screen-summary");
+
+  // OPTIONAL: build trip summary (safe even if fields are empty)
+  const pickup = document.getElementById("pickup")?.value || "";
+  const dropoff = document.getElementById("dropoff")?.value || "";
+  const date = document.getElementById("date")?.value || "";
+  const time = document.getElementById("time")?.value || "";
+
+  document.getElementById("summary").innerHTML = `
+    <strong>Pickup:</strong> ${pickup}<br>
+    <strong>Dropoff:</strong> ${dropoff}<br>
+    <strong>Date:</strong> ${date}<br>
+    <strong>Time:</strong> ${time}
+  `;
+}
+</script>
 
 </body>
 </html>
