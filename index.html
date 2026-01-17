@@ -598,6 +598,16 @@ function confirmPickup() {
   document.getElementById("screen-flight").classList.add("active");
 }
 </script>
+  <script>
+function confirmFlight() {
+  // hide Flight screen
+  document.getElementById("screen-flight").classList.remove("active");
+
+  // show Vehicle screen
+  document.getElementById("screen-vehicle").classList.add("active");
+}
+</script>
+
 
 </body>
 </html>
