@@ -12,10 +12,10 @@
 
 <!-- GOOGLE MAPS -->
 <script
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjMY&libraries=places"
-  async
-  defer
-></script>
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjMY&libraries=places&callback=mapsLoaded"
+  defer>
+</script>
+
 
 
 
@@ -235,7 +235,9 @@ footer {
 </div>
 
 
-
+<script>
+let mapsReady = false;
+  </script>
   <label>Dropoff Location</label>
   <input
     type="text"
@@ -591,26 +593,54 @@ function confirmRoute() {
 
 </script>
 
+
 <script>
-function confirmPickup() {
-  // hide Date/Time screen
-  document.getElementById("screen-datetime").classList.remove("active");
+function confirmRoute() {
+  if (!mapsReady) {
+    alert("Map is still loading. Please try again.");
+    return;
+  }
 
-  // show Flight screen
-  document.getElementById("screen-flight").classList.add("active");
+  const pickup = document.getElementById("pickup").value.trim();
+  const dropoff = document.getElementById("dropoff").value.trim();
+
+  if (!pickup || !dropoff) {
+    alert("Please enter both pickup and dropoff locations");
+    return;
+  }
+
+  const mapEl = document.getElementById("map");
+
+  directionsService = new google.maps.DirectionsService();
+  directionsRenderer = new google.maps.DirectionsRenderer();
+
+  map = new google.maps.Map(mapEl, {
+    zoom: 12,
+    center: { lat: 33.749, lng: -84.388 } // Atlanta
+  });
+
+  directionsRenderer.setMap(map);
+
+  directionsService.route(
+    {
+      origin: pickup,
+      destination: dropoff,
+      travelMode: google.maps.TravelMode.DRIVING
+    },
+    (result, status) => {
+      if (status !== "OK") {
+        alert("Route not found. Please check addresses.");
+        return;
+      }
+
+      directionsRenderer.setDirections(result);
+
+      // ✅ MOVE TO NEXT SCREEN
+      show("screen-datetime");
+    }
+  );
 }
 </script>
-  <script>
-function confirmFlight() {
-  // hide Flight screen
-  document.getElementById("screen-flight").classList.remove("active");
-
-  // show Vehicle screen
-  document.getElementById("screen-vehicle").classList.add("active");
-}
-</script>
-  
-
 <script>
 function confirmVehicle() {
   // Move to Summary screen
@@ -807,7 +837,11 @@ window.addEventListener("load", () => {
   });
 });
 </script>
-
+<script>
+function mapsLoaded() {
+  mapsReady = true;
+}
+</script>
 
 </body>
 </html>
