@@ -637,6 +637,61 @@ function payNow() {
   window.location.href = "https://your-payment-link-here.com";
 }
 </script>
+<script>
+let placesService;
+let userLatLng = null;
+
+// Get user GPS once
+navigator.geolocation.getCurrentPosition(
+  pos => {
+    userLatLng = new google.maps.LatLng(
+      pos.coords.latitude,
+      pos.coords.longitude
+    );
+  },
+  () => console.log("GPS denied")
+);
+
+// When user taps dropoff
+document.getElementById("dropoff").addEventListener("focus", () => {
+  if (!userLatLng) return;
+
+  const map = new google.maps.Map(document.createElement("div"));
+  placesService = new google.maps.places.PlacesService(map);
+
+  placesService.nearbySearch(
+    {
+      location: userLatLng,
+      radius: 80000, // ~50 miles
+      type: "airport"
+    },
+    (results, status) => {
+      if (status !== "OK" || !results) return;
+
+      const list = document.getElementById("dropoffSuggestions");
+      list.innerHTML = "";
+      list.style.display = "block";
+
+      results.slice(0, 2).forEach(place => {
+        const div = document.createElement("div");
+        div.className = "suggestion";
+        div.innerHTML = `
+          ✈️ <strong>${place.name}</strong>
+          <small>${place.vicinity || ""}</small>
+        `;
+
+        div.onclick = () => {
+          document.getElementById("dropoff").value = place.name;
+          list.style.display = "none";
+        };
+
+        list.appendChild(div);
+      });
+    }
+  );
+});
+</script>
+
 </body>
 </html>
 
