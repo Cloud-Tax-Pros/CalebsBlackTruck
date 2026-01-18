@@ -781,6 +781,32 @@ function showNearbyAirports() {
   });
 }
 </script>
+ <script>
+let pickupAutocomplete;
+let dropoffAutocomplete;
+
+window.addEventListener("load", () => {
+  if (!google?.maps?.places) {
+    console.error("Google Places not loaded");
+    return;
+  }
+
+  const pickupInput = document.getElementById("pickup");
+  const dropoffInput = document.getElementById("dropoff");
+
+  // Attach Google dropdown to PICKUP
+  pickupAutocomplete = new google.maps.places.Autocomplete(pickupInput, {
+    types: ["address"],
+    componentRestrictions: { country: "us" }
+  });
+
+  // Attach Google dropdown to DROPOFF
+  dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput, {
+    types: ["address"],
+    componentRestrictions: { country: "us" }
+  });
+});
+</script>
 
 
 </body>
