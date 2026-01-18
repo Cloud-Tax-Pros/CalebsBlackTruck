@@ -691,6 +691,23 @@ document.getElementById("dropoff").addEventListener("focus", () => {
   );
 });
 </script>
+<script>
+let dropoffAutocomplete;
+
+window.addEventListener("load", () => {
+  const dropoffInput = document.getElementById("dropoff");
+
+  dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput, {
+    types: ["address"], // 🔑 forces street addresses
+    componentRestrictions: { country: "us" }
+  });
+
+  dropoffAutocomplete.setFields([
+    "formatted_address",
+    "geometry"
+  ]);
+});
+</script>
 
 </body>
 </html>
