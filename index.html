@@ -12,7 +12,7 @@
 
 <!-- GOOGLE MAPS -->
 <script
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM&libraries=places"
+  src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initDropoffAutocomplete"
   async
   defer
 ></script>
@@ -695,11 +695,13 @@ document.getElementById("dropoff").addEventListener("focus", () => {
 <script>
 let dropoffAutocomplete;
 
-window.addEventListener("load", () => {
+function initDropoffAutocomplete() {
   const dropoffInput = document.getElementById("dropoff");
 
+  if (!dropoffInput) return;
+
   dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput, {
-    types: ["address"], // 🔑 forces street addresses
+    types: ["address"],
     componentRestrictions: { country: "us" }
   });
 
@@ -707,8 +709,9 @@ window.addEventListener("load", () => {
     "formatted_address",
     "geometry"
   ]);
-});
+}
 </script>
+
 
 </body>
 </html>
