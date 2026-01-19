@@ -343,7 +343,6 @@ let mapsReady = false;
     },
     () => alert("Location permission denied")
   );
-});
 </script>
 <script>
 let pickupFilledByGPS = false;
@@ -378,53 +377,7 @@ document.getElementById("pickup").addEventListener("focus", () => {
 
 
 
-<script>
-function confirmRoute() {
-  if (!mapsReady) {
-    alert("Map is still loading. Please try again.");
-    return;
-  }
 
-  const pickup = document.getElementById("pickup").value.trim();
-  const dropoff = document.getElementById("dropoff").value.trim();
-
-  if (!pickup || !dropoff) {
-    alert("Please enter both pickup and dropoff locations");
-    return;
-  }
-
-  const mapEl = document.getElementById("map");
-
-  directionsService = new google.maps.DirectionsService();
-  directionsRenderer = new google.maps.DirectionsRenderer();
-
-  map = new google.maps.Map(mapEl, {
-    zoom: 12,
-    center: { lat: 33.749, lng: -84.388 } // Atlanta
-  });
-
-  directionsRenderer.setMap(map);
-
-  directionsService.route(
-    {
-      origin: pickup,
-      destination: dropoff,
-      travelMode: google.maps.TravelMode.DRIVING
-    },
-    (result, status) => {
-      if (status !== "OK") {
-        alert("Route not found. Please check addresses.");
-        return;
-      }
-
-      directionsRenderer.setDirections(result);
-
-      // ✅ MOVE TO NEXT SCREEN
-      show("screen-datetime");
-    }
-  );
-}
-</script>
 <script>
 function confirmVehicle() {
   // Move to Summary screen
