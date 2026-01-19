@@ -504,7 +504,52 @@ window.mapsLoaded = () => {
 };
 </script>
 
- 
+ <script>
+let map, directionsService, directionsRenderer;
+
+function confirmRoute() {
+  if (!mapsReady) {
+    alert("Map is still loading. Please try again.");
+    return;
+  }
+
+  const pickup = document.getElementById("pickup").value.trim();
+  const dropoff = document.getElementById("dropoff").value.trim();
+
+  if (!pickup || !dropoff) {
+    alert("Please enter both pickup and dropoff locations");
+    return;
+  }
+
+  directionsService = new google.maps.DirectionsService();
+  directionsRenderer = new google.maps.DirectionsRenderer();
+
+  map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 12,
+    center: { lat: 33.749, lng: -84.388 }
+  });
+
+  directionsRenderer.setMap(map);
+
+  directionsService.route(
+    {
+      origin: pickup,
+      destination: dropoff,
+      travelMode: google.maps.TravelMode.DRIVING
+    },
+    (result, status) => {
+      if (status !== "OK") {
+        alert("Route not found.");
+        return;
+      }
+
+      directionsRenderer.setDirections(result);
+      show("screen-datetime");
+    }
+  );
+}
+</script>
+
 
 </body>
 </html>
