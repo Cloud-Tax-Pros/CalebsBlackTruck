@@ -405,7 +405,6 @@ function payNow() {
 }
 </script>
 
-
 <script>
 let map, directionsService, directionsRenderer;
 let mapsReady = false;
@@ -416,13 +415,13 @@ function mapsLoaded() {
 
   const dropoffInput = document.getElementById("dropoff");
 
-  // Normal address autocomplete
+  // Google address autocomplete
   dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput, {
     types: ["geocode"],
     componentRestrictions: { country: "us" }
   });
 
-  // Airports FIRST when focusing dropoff
+  // Airports FIRST, then addresses
   dropoffInput.addEventListener("focus", () => {
     setTimeout(() => {
       const pac = document.querySelector(".pac-container");
@@ -450,6 +449,48 @@ function mapsLoaded() {
       });
     }, 300);
   });
+}
+
+function confirmRoute() {
+  if (!mapsReady) {
+    alert("Map is still loading. Please try again.");
+    return;
+  }
+
+  const pickup = document.getElementById("pickup").value.trim();
+  const dropoff = document.getElementById("dropoff").value.trim();
+
+  if (!pickup || !dropoff) {
+    alert("Please enter both pickup and dropoff locations");
+    return;
+  }
+
+  directionsService = new google.maps.DirectionsService();
+  directionsRenderer = new google.maps.DirectionsRenderer();
+
+  map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 12,
+    center: { lat: 33.749, lng: -84.388 }
+  });
+
+  directionsRenderer.setMap(map);
+
+  directionsService.route(
+    {
+      origin: pickup,
+      destination: dropoff,
+      travelMode: google.maps.TravelMode.DRIVING
+    },
+    (result, status) => {
+      if (status !== "OK") {
+        alert("Route not found.");
+        return;
+      }
+
+      directionsRenderer.setDirections(result);
+      show("screen-datetime");
+    }
+  );
 }
 </script>
 
