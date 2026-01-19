@@ -655,19 +655,7 @@ function payNow() {
 }
 </script>
 <script>
-let placesService;
-let userLatLng = null;
 
-// Get user GPS once
-navigator.geolocation.getCurrentPosition(
-  pos => {
-    userLatLng = new google.maps.LatLng(
-      pos.coords.latitude,
-      pos.coords.longitude
-    );
-  },
-  () => console.log("GPS denied")
-);
 
 // When user taps dropoff
 document.getElementById("dropoff").addEventListener("focus", () => {
