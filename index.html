@@ -396,15 +396,9 @@ function show(id) {
 /* CONFIRM ROUTE */
 
 
-  directionsService = new google.maps.DirectionsService();
-  directionsRenderer = new google.maps.DirectionsRenderer();
 
-  map = new google.maps.Map(document.getElementById("map"), {
-    zoom: 12,
-    center: { lat: 33.749, lng: -84.388 } // Atlanta default
-  });
 
-  directionsRenderer.setMap(map);
+  
 
   directionsService.route(
     {
@@ -510,8 +504,7 @@ function payNow() {
 
 // When user taps dropoff
 
-    (results, status) => {
-      if (status !== "OK" || !results) return;
+
 
       const list = document.getElementById("dropoffSuggestions");
       list.innerHTML = "";
@@ -536,46 +529,8 @@ function payNow() {
   );
 });
 </script>
-<script>
-let dropoffAutocomplete;
 
-function initDropoffAutocomplete() {
-  const dropoffInput = document.getElementById("dropoff");
-
-  if (!dropoffInput) return;
-
-  dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput, {
-    types: ["address"],
-    componentRestrictions: { country: "us" }
-  });
-
-  dropoffAutocomplete.setFields([
-    "formatted_address",
-    "geometry"
-  ]);
-}
-</script>
-
- <script>
-let pickupAutocomplete;
-
-
-  const pickupInput = document.getElementById("pickup");
-  const dropoffInput = document.getElementById("dropoff");
-
-  // Attach Google dropdown to PICKUP
-  pickupAutocomplete = new google.maps.places.Autocomplete(pickupInput, {
-    types: ["address"],
-    componentRestrictions: { country: "us" }
-  });
-
-  // Attach Google dropdown to DROPOFF
-
-<script>
-function mapsLoaded() {
-  mapsReady = true;
-}
-</script>
+ 
 
 
 
