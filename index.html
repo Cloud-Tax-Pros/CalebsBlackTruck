@@ -406,64 +406,6 @@ function payNow() {
   window.location.href = "https://your-payment-link-here.com";
 }
 </script>
-<script>
-let dropoffAutocomplete;
-let airportPredictions = [];
-
-function initDropoffAutocomplete() {
-  const dropoffInput = document.getElementById("dropoff");
-
-  // Address autocomplete
-  dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput, {
-    types: ["geocode"],
-    componentRestrictions: { country: "us" }
-  });
-
-  const service = new google.maps.places.AutocompleteService();
-
-  dropoffInput.addEventListener("input", () => {
-    const query = dropoffInput.value;
-    if (!query) return;
-
-    // Get airport predictions
-    service.getPlacePredictions(
-      { input: query + " airport", types: ["establishment"] },
-      (preds) => {
-        airportPredictions = preds || [];
-      }
-    );
-
-    // Reorder dropdown
-    setTimeout(() => {
-      const pac = document.querySelector(".pac-container");
-      if (!pac) return;
-
-      const items = [...pac.children];
-      const airports = items.filter(i =>
-        i.innerText.toLowerCase().includes("airport")
-      );
-      const others = items.filter(i => !airports.includes(i));
-
-      pac.innerHTML = "";
-      airports.forEach(i => pac.appendChild(i));
-      others.forEach(i => pac.appendChild(i));
-    }, 300);
-  });
-}
-
-window.mapsLoaded = () => {
-  mapsReady = true;
-  initDropoffAutocomplete();
-};
-</script>
-<script>
-function show(id) {
-  document.querySelectorAll(".screen").forEach(screen =>
-    screen.classList.remove("active")
-  );
-  document.getElementById(id).classList.add("active");
-}
-</script>
 
  <script>
 let map, directionsService, directionsRenderer;
