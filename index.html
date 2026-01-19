@@ -579,11 +579,7 @@ function confirmRoute() {
     }
   );
 }
-  confirmPickupBtn.addEventListener("click", () => {
-  if (!pickupInput.value || pickupInput.value.startsWith("Tap")) {
-    statusText.textContent = "Please tap the pickup field to get location.";
-    return;
-  }
+
 
   pickupInput.disabled = true;
   confirmPickupBtn.disabled = true;
