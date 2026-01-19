@@ -12,11 +12,9 @@
 
 <!-- GOOGLE MAPS -->
 <script
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjMY&libraries=places&callback=mapsLoaded"
-  defer>
-</script>
-
-
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM&libraries=places&callback=initAutocomplete"
+  async
+></script>
 
 
 <!-- FONTS -->
@@ -244,7 +242,7 @@ footer {
     autocomplete="off"
     required
   />
-  
+    <div id="dropoffSuggestions" class="suggestions"></div>
 
   <button onclick="confirmRoute()">CONFIRM YOUR ROUTE</button>
 
@@ -306,6 +304,11 @@ footer {
 
   <button onclick="payNow()">BOOK THIS TRIP</button>
 
+<script>
+function payNow() {
+  window.location.href = "PASTE_YOUR_STRIPE_PAYMENT_LINK_HERE";
+}
+</script>
 
 </div>
 
@@ -313,14 +316,163 @@ footer {
   © Caleb’s Black Truck • Private • Trusted • Atlanta
 </footer>
   
+<script>
+let autocompleteService;
+let geocoder;
+
+function initPickupSearch() {
+  autocompleteService = new google.maps.places.AutocompleteService();
+  geocoder = new google.maps.Geocoder();
+
+  const input = document.getElementById("pickup");
+  const list = document.getElementById("pickupSuggestions");
+
+  input.addEventListener("input", () => {
+    const value = input.value;
+    if (!value) {
+      list.style.display = "none";
+      return;
+    }
+
+    autocompleteService.getPlacePredictions(
+      {
+        input: value,
+        types: ["geocode", "airport"],
+        componentRestrictions: { country: "us" }
+      },
+      (predictions, status) => {
+        list.innerHTML = "";
+        if (!predictions || status !== "OK") return;
+
+        // 🔝 Current location option
+        const current = document.createElement("div");
+        current.className = "suggestion-item";
+        current.innerHTML = `<span class="icon">📍</span> Set As My Current Location`;
+        current.onclick = getCurrentLocation;
+        list.appendChild(current);
+
+        predictions.forEach(p => {
+          const div = document.createElement("div");
+          div.className = "suggestion-item";
+          div.innerHTML = `
+            <span class="icon">✈️</span>
+            <div>
+              <strong>${p.structured_formatting.main_text}</strong><br>
+              <small>${p.structured_formatting.secondary_text || ""}</small>
+            </div>
+          `;
+          div.onclick = () => {
+            input.value = p.description;
+            list.style.display = "none";
+          };
+          list.appendChild(div);
+        });
+
+        list.style.display = "block";
+      }
+    );
+  });
+}
+
+function getCurrentLocation() {
+  navigator.geolocation.getCurrentPosition(pos => {
+    const latlng = {
+      lat: pos.coords.latitude,
+      lng: pos.coords.longitude
+    };
+
+    geocoder.geocode({ location: latlng }, (results) => {
+      if (results[0]) {
+        document.getElementById("pickup").value = results[0].formatted_address;
+        document.getElementById("pickupSuggestions").style.display = "none";
+      }
+    });
+  });
+}
+
+window.addEventListener("load", initPickupSearch);
+</script>
 
 
 
 <script>
+let pickupAutocomplete;
+let dropoffAutocomplete;
 
+function initAutocomplete() {
+  pickupAutocomplete = new google.maps.places.Autocomplete(
+    document.getElementById("pickup"),
+    {
+      types: ["geocode", "establishment"],
+      componentRestrictions: { country: "us" }
+    }
+  );
 
+  dropoffAutocomplete = new google.maps.places.Autocomplete(
+    document.getElementById("dropoff"),
+    {
+      types: ["geocode", "establishment"],
+      componentRestrictions: { country: "us" }
+    }
+  );
+
+  pickupAutocomplete.addListener("place_changed", () => {
+    document.getElementById("pickup-helper").style.display = "none";
+  });
+}
+</script>
+  <script>
+document.getElementById("useCurrentLocation").addEventListener("click", async () => {
+  if (!navigator.geolocation) {
+    alert("Geolocation not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+
+    const response = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM`
+    );
+
+    const data = await response.json();
+
+    if (data.results && data.results.length > 0) {
+      document.getElementById("pickup").value =
+        data.results[0].formatted_address;
+
+      document.getElementById("pickup-helper").style.display = "none";
+    } else {
+      alert("Unable to determine address");
+    }
+  },
+  () => alert("Location permission denied"));
+});
+</script>
+
+<script>
+let pickupAutocomplete;
+
+function initAutocomplete() {
+  pickupAutocomplete = new google.maps.places.Autocomplete(
+    document.getElementById("pickup"),
+    {
+      types: ["geocode"],
+      componentRestrictions: { country: "us" }
+    }
+  );
+}
+
+window.addEventListener("load", initAutocomplete);
 
 // CURRENT LOCATION BUTTON
+document.getElementById("useLocation").addEventListener("click", () => {
+  if (!navigator.geolocation) {
+    alert("Geolocation not supported");
+    return;
+  }
+
   navigator.geolocation.getCurrentPosition(
     async (position) => {
       const lat = position.coords.latitude;
@@ -341,6 +493,7 @@ footer {
     },
     () => alert("Location permission denied")
   );
+});
 </script>
 <script>
 let pickupFilledByGPS = false;
@@ -372,9 +525,89 @@ document.getElementById("pickup").addEventListener("focus", () => {
   });
 });
 </script>
+<script>
+let map, directionsService, directionsRenderer;
 
+/* SCREEN SWITCHER */
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s =>
+    s.classList.remove("active")
+  );
+  document.getElementById(id).classList.add("active");
+}
 
+/* CONFIRM ROUTE */
+function confirmRoute() {
+  const pickup = document.getElementById("pickup").value.trim();
+  const dropoff = document.getElementById("dropoff").value.trim();
 
+  if (!pickup || !dropoff) {
+    alert("Please enter both pickup and dropoff locations");
+    return;
+  }
+
+  directionsService = new google.maps.DirectionsService();
+  directionsRenderer = new google.maps.DirectionsRenderer();
+
+  map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 12,
+    center: { lat: 33.749, lng: -84.388 } // Atlanta default
+  });
+
+  directionsRenderer.setMap(map);
+
+  directionsService.route(
+    {
+      origin: pickup,
+      destination: dropoff,
+      travelMode: google.maps.TravelMode.DRIVING
+    },
+    (result, status) => {
+      if (status !== "OK") {
+        alert("Route not found. Please check addresses.");
+        return;
+      }
+
+      directionsRenderer.setDirections(result);
+
+      // Move to next screen
+      show("screen-datetime");
+    }
+  );
+}
+  confirmPickupBtn.addEventListener("click", () => {
+  if (!pickupInput.value || pickupInput.value.startsWith("Tap")) {
+    statusText.textContent = "Please tap the pickup field to get location.";
+    return;
+  }
+
+  pickupInput.disabled = true;
+  confirmPickupBtn.disabled = true;
+
+  statusText.textContent = "Pickup confirmed ✔️";
+});
+
+</script>
+
+<script>
+function confirmPickup() {
+  // hide Date/Time screen
+  document.getElementById("screen-datetime").classList.remove("active");
+
+  // show Flight screen
+  document.getElementById("screen-flight").classList.add("active");
+}
+</script>
+  <script>
+function confirmFlight() {
+  // hide Flight screen
+  document.getElementById("screen-flight").classList.remove("active");
+
+  // show Vehicle screen
+  document.getElementById("screen-vehicle").classList.add("active");
+}
+</script>
+  
 
 <script>
 function confirmVehicle() {
@@ -404,107 +637,5 @@ function payNow() {
   window.location.href = "https://your-payment-link-here.com";
 }
 </script>
-
-<script>
-let map, directionsService, directionsRenderer;
-let mapsReady = false;
-let dropoffAutocomplete;
-
-function mapsLoaded() {
-  mapsReady = true;
-
-  const dropoffInput = document.getElementById("dropoff");
-
-  // Google address autocomplete
-  dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput, {
-    types: ["geocode"],
-    componentRestrictions: { country: "us" }
-  });
-
-  // Airports FIRST, then addresses
-  dropoffInput.addEventListener("focus", () => {
-    setTimeout(() => {
-      const pac = document.querySelector(".pac-container");
-      if (!pac || pac.querySelector(".airport-option")) return;
-
-      const airports = [
-        {
-          label: "✈️ Hartsfield–Jackson Atlanta International Airport (ATL)",
-          value: "6000 N Terminal Pkwy, Atlanta, GA 30320"
-        },
-        {
-          label: "✈️ DeKalb–Peachtree Airport (PDK)",
-          value: "2000 Airport Rd, Atlanta, GA 30341"
-        }
-      ];
-
-      airports.reverse().forEach(a => {
-        const div = document.createElement("div");
-        div.className = "pac-item airport-option";
-        div.innerHTML = `<strong>${a.label}</strong>`;
-        div.onclick = () => {
-          dropoffInput.value = a.value;
-        };
-        pac.prepend(div);
-      });
-    }, 300);
-  });
-}
-
-function confirmRoute() {
-  if (!mapsReady) {
-    alert("Map is still loading. Please try again.");
-    return;
-  }
-
-  const pickup = document.getElementById("pickup").value.trim();
-  const dropoff = document.getElementById("dropoff").value.trim();
-
-  if (!pickup || !dropoff) {
-    alert("Please enter both pickup and dropoff locations");
-    return;
-  }
-
-  directionsService = new google.maps.DirectionsService();
-  directionsRenderer = new google.maps.DirectionsRenderer();
-
-  map = new google.maps.Map(document.getElementById("map"), {
-    zoom: 12,
-    center: { lat: 33.749, lng: -84.388 }
-  });
-
-  directionsRenderer.setMap(map);
-
-  directionsService.route(
-    {
-      origin: pickup,
-      destination: dropoff,
-      travelMode: google.maps.TravelMode.DRIVING
-    },
-    (result, status) => {
-      if (status !== "OK") {
-        alert("Route not found.");
-        return;
-      }
-
-      directionsRenderer.setDirections(result);
-      show("screen-datetime");
-    }
-  );
-}
-</script>
-
-<script>
-function show(id) {
-  document.querySelectorAll(".screen").forEach(s =>
-    s.classList.remove("active")
-  );
-  document.getElementById(id).classList.add("active");
-}
-</script>
-
 </body>
 </html>
-
-
-
