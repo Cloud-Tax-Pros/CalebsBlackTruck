@@ -450,51 +450,6 @@ function confirmRoute() {
   );
 }
 </script>
-<script>
-let dropoffAutocomplete;
-
-function initDropoffAutocomplete() {
-  const dropoffInput = document.getElementById("dropoff");
-
-  // Google address autocomplete (normal behavior)
-  dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput, {
-    types: ["geocode"],
-    componentRestrictions: { country: "us" }
-  });
-
-  // Show airports when user focuses dropoff
-  dropoffInput.addEventListener("focus", () => {
-    setTimeout(() => {
-      const pac = document.querySelector(".pac-container");
-      if (!pac || pac.querySelector(".airport-option")) return;
-
-      const airports = [
-        {
-          name: "Hartsfield–Jackson Atlanta International Airport (ATL)",
-          address: "6000 N Terminal Pkwy, Atlanta, GA 30320"
-        },
-        {
-          name: "DeKalb–Peachtree Airport (PDK)",
-          address: "2000 Airport Rd, Atlanta, GA 30341"
-        }
-      ];
-
-      airports.reverse().forEach(airport => {
-        const div = document.createElement("div");
-        div.className = "pac-item airport-option";
-        div.innerHTML = `
-          ✈️ <strong>${airport.name}</strong>
-          <span class="pac-item-query"></span>
-        `;
-        div.onclick = () => {
-          dropoffInput.value = airport.address;
-        };
-        pac.prepend(div);
-      });
-    }, 300);
-  });
-}
-</script>
 
 
 </body>
