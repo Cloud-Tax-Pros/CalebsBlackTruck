@@ -456,6 +456,14 @@ window.mapsLoaded = () => {
   initDropoffAutocomplete();
 };
 </script>
+<script>
+function show(id) {
+  document.querySelectorAll(".screen").forEach(screen =>
+    screen.classList.remove("active")
+  );
+  document.getElementById(id).classList.add("active");
+}
+</script>
 
  <script>
 let map, directionsService, directionsRenderer;
