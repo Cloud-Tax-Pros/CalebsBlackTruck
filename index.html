@@ -512,18 +512,7 @@ function payNow() {
 
 
 // When user taps dropoff
-document.getElementById("dropoff").addEventListener("focus", () => {
-  if (!userLatLng) return;
 
-  const map = new google.maps.Map(document.createElement("div"));
-  placesService = new google.maps.places.PlacesService(map);
-
-  placesService.nearbySearch(
-    {
-      location: userLatLng,
-      radius: 80000, // ~50 miles
-      type: "airport"
-    },
     (results, status) => {
       if (status !== "OK" || !results) return;
 
