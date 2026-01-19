@@ -456,17 +456,6 @@ document.getElementById("useCurrentLocation").addEventListener("click", async ()
 </script>
 
 <script>
-let pickupAutocomplete;
-
-function initAutocomplete() {
-  pickupAutocomplete = new google.maps.places.Autocomplete(
-    document.getElementById("pickup"),
-    {
-      types: ["geocode"],
-      componentRestrictions: { country: "us" }
-    }
-  );
-}
 
 window.addEventListener("load", initAutocomplete);
 
