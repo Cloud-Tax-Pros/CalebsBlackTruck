@@ -328,8 +328,6 @@ function payNow() {
 
 
 // CURRENT LOCATION BUTTON
-
-
   navigator.geolocation.getCurrentPosition(
     async (position) => {
       const lat = position.coords.latitude;
@@ -399,20 +397,7 @@ function show(id) {
 
 
   
-
-  directionsService.route(
-    {
-      origin: pickup,
-      destination: dropoff,
-      travelMode: google.maps.TravelMode.DRIVING
-    },
-    (result, status) => {
-      if (status !== "OK") {
-        alert("Route not found. Please check addresses.");
-        return;
-      }
-
-      directionsRenderer.setDirections(result);
+;
 
       // Move to next screen
       show("screen-datetime");
