@@ -558,84 +558,10 @@ function initDropoffAutocomplete() {
   ]);
 }
 </script>
-<script>
-let dropoffAutocomplete;
-let placesService;
 
-window.addEventListener("load", () => {
-  if (!google || !google.maps || !google.maps.places) {
-    console.error("Google Places not loaded");
-    return;
-  }
-
-  const dropoffInput = document.getElementById("dropoff");
-
-  // 1️⃣ Normal address autocomplete
-  dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput, {
-    types: ["address"],
-    componentRestrictions: { country: "us" }
-  });
-
-  // 2️⃣ When user taps the field → show top 2 nearby airports
-  dropoffInput.addEventListener("focus", showNearbyAirports);
-});
-
-function showNearbyAirports() {
-  if (!navigator.geolocation) return;
-
-  navigator.geolocation.getCurrentPosition(pos => {
-    const location = new google.maps.LatLng(
-      pos.coords.latitude,
-      pos.coords.longitude
-    );
-
-    const map = new google.maps.Map(document.createElement("div"));
-    placesService = new google.maps.places.PlacesService(map);
-
-    placesService.nearbySearch(
-      {
-        location,
-        radius: 80000, // ~50 miles
-        type: "airport"
-      },
-      (results, status) => {
-        if (status !== "OK" || !results) return;
-
-        // Take top 2 airports
-        const airports = results.slice(0, 2);
-
-        // Manually inject into autocomplete dropdown
-        const pac = document.querySelector(".pac-container");
-        if (!pac) return;
-
-        airports.forEach(airport => {
-          const div = document.createElement("div");
-          div.className = "pac-item";
-          div.innerHTML = `
-            ✈️ <strong>${airport.name}</strong><br>
-            <small>${airport.vicinity || ""}</small>
-          `;
-
-          div.onclick = () => {
-            document.getElementById("dropoff").value = airport.name;
-          };
-
-          pac.prepend(div);
-        });
-      }
-    );
-  });
-}
-</script>
  <script>
 let pickupAutocomplete;
-let dropoffAutocomplete;
 
-window.addEventListener("load", () => {
-  if (!google?.maps?.places) {
-    console.error("Google Places not loaded");
-    return;
-  }
 
   const pickupInput = document.getElementById("pickup");
   const dropoffInput = document.getElementById("dropoff");
@@ -647,71 +573,13 @@ window.addEventListener("load", () => {
   });
 
   // Attach Google dropdown to DROPOFF
-  dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput, {
-    types: ["address"],
-    componentRestrictions: { country: "us" }
-  });
-});
-</script>
+
 <script>
 function mapsLoaded() {
   mapsReady = true;
 }
 </script>
-  <script>
-let dropoffAutocomplete;
-let airportCache = [];
 
-function initDropoffAutocomplete() {
-  const dropoffInput = document.getElementById("dropoff");
-
-  // Normal Google autocomplete
-  dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput, {
-    types: ["geocode", "establishment"],
-    componentRestrictions: { country: "us" }
-  });
-
-  // Load nearest airports once
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(pos => {
-      const location = new google.maps.LatLng(
-        pos.coords.latitude,
-        pos.coords.longitude
-      );
-
-      const map = new google.maps.Map(document.createElement("div"));
-      const service = new google.maps.places.PlacesService(map);
-
-      service.nearbySearch(
-        { location, radius: 80000, type: "airport" },
-        (results, status) => {
-          if (status === "OK") airportCache = results.slice(0, 2);
-        }
-      );
-    });
-  }
-
-  // Inject airports ABOVE Google suggestions
-  dropoffInput.addEventListener("input", () => {
-    setTimeout(() => {
-      const pac = document.querySelector(".pac-container");
-      if (!pac || pac.querySelector(".airport-item")) return;
-
-      airportCache.slice().reverse().forEach(airport => {
-        const div = document.createElement("div");
-        div.className = "pac-item airport-item";
-        div.innerHTML = `✈️ <strong>${airport.name}</strong>`;
-        div.onclick = () => {
-          dropoffInput.value = airport.name;
-        };
-        pac.prepend(div);
-      });
-    }, 300);
-  });
-}
-
-window.addEventListener("load", initDropoffAutocomplete);
-</script>
 
 
 </body>
