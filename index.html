@@ -815,6 +815,61 @@ function mapsLoaded() {
   mapsReady = true;
 }
 </script>
+  <script>
+let dropoffAutocomplete;
+let airportCache = [];
+
+function initDropoffAutocomplete() {
+  const dropoffInput = document.getElementById("dropoff");
+
+  // Normal Google autocomplete
+  dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput, {
+    types: ["geocode", "establishment"],
+    componentRestrictions: { country: "us" }
+  });
+
+  // Load nearest airports once
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      const location = new google.maps.LatLng(
+        pos.coords.latitude,
+        pos.coords.longitude
+      );
+
+      const map = new google.maps.Map(document.createElement("div"));
+      const service = new google.maps.places.PlacesService(map);
+
+      service.nearbySearch(
+        { location, radius: 80000, type: "airport" },
+        (results, status) => {
+          if (status === "OK") airportCache = results.slice(0, 2);
+        }
+      );
+    });
+  }
+
+  // Inject airports ABOVE Google suggestions
+  dropoffInput.addEventListener("input", () => {
+    setTimeout(() => {
+      const pac = document.querySelector(".pac-container");
+      if (!pac || pac.querySelector(".airport-item")) return;
+
+      airportCache.slice().reverse().forEach(airport => {
+        const div = document.createElement("div");
+        div.className = "pac-item airport-item";
+        div.innerHTML = `✈️ <strong>${airport.name}</strong>`;
+        div.onclick = () => {
+          dropoffInput.value = airport.name;
+        };
+        pac.prepend(div);
+      });
+    }, 300);
+  });
+}
+
+window.addEventListener("load", initDropoffAutocomplete);
+</script>
+
 
 </body>
 </html>
