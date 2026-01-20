@@ -709,6 +709,29 @@ function payNow() {
 })();
 </script>
 
+<script>
+(function () {
+  const dropoffInput = document.getElementById("dropoff");
+  if (!dropoffInput || !navigator.geolocation || !window.google) return;
+
+  navigator.geolocation.getCurrentPosition(position => {
+    const userLocation = new google.maps.LatLng(
+      position.coords.latitude,
+      position.coords.longitude
+    );
+
+    const autocomplete = new google.maps.places.Autocomplete(dropoffInput, {
+      types: ["airport"],
+      componentRestrictions: { country: "us" }
+    });
+
+    // 🔑 THIS MAKES “CLOSEST AIRPORT” WORK
+    autocomplete.setBounds(
+      new google.maps.LatLngBounds(userLocation, userLocation)
+    );
+  });
+})();
+</script>
 
 </body>
 </html>
