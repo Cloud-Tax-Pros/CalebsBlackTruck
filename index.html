@@ -637,5 +637,41 @@ function payNow() {
   window.location.href = "https://your-payment-link-here.com";
 }
 </script>
+  <script>
+(function () {
+  const dropoffInput = document.getElementById("dropoff");
+
+  const airports = [
+    {
+      label: "✈️ Hartsfield–Jackson Atlanta International Airport (ATL)",
+      value: "6000 N Terminal Pkwy, Atlanta, GA 30320"
+    },
+    {
+      label: "✈️ DeKalb–Peachtree Airport (PDK)",
+      value: "2000 Airport Rd, Atlanta, GA 30341"
+    }
+  ];
+
+  dropoffInput.addEventListener("focus", () => {
+    setTimeout(() => {
+      const pac = document.querySelector(".pac-container");
+      if (!pac || pac.dataset.airportsAdded) return;
+
+      pac.dataset.airportsAdded = "true";
+
+      airports.slice().reverse().forEach(airport => {
+        const div = document.createElement("div");
+        div.className = "pac-item";
+        div.innerHTML = `<strong>${airport.label}</strong>`;
+        div.onclick = () => {
+          dropoffInput.value = airport.value;
+        };
+        pac.prepend(div);
+      });
+    }, 300);
+  });
+})();
+</script>
+
 </body>
 </html>
