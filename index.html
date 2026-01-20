@@ -15,7 +15,38 @@
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSKvz-B8diZKPDchOQ_u0qJEqkSisEWjM&libraries=places&callback=initAutocomplete"
   async
 ></script>
+<script>
+(function () {
+  const dropoff = document.getElementById("dropoff");
+  if (!dropoff) return;
 
+  dropoff.addEventListener("focus", () => {
+    setTimeout(() => {
+      const pac = document.querySelector(".pac-container");
+      if (!pac || pac.dataset.airportPinned) return;
+
+      pac.dataset.airportPinned = "true";
+
+      const airportItems = [...pac.querySelectorAll(".pac-item")]
+        .filter(item =>
+          item.innerText.toLowerCase().includes("airport")
+        );
+
+      if (!airportItems.length) return;
+
+      const pin = document.createElement("div");
+      pin.className = "airport-pin";
+      pin.innerHTML = "<strong>Closest Airport</strong>";
+
+      pac.prepend(pin);
+
+      airportItems.reverse().forEach(item => {
+        pac.prepend(item.cloneNode(true));
+      });
+    }, 300);
+  });
+})();
+</script>
 
 <!-- FONTS -->
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
