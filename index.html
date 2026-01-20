@@ -641,6 +641,7 @@ function payNow() {
   <script>
 (function () {
   const dropoffInput = document.getElementById("dropoff");
+  if (!dropoffInput) return;
 
   const airports = [
     {
@@ -657,10 +658,8 @@ function payNow() {
     }
   ];
 
-  function distance(lat1, lng1, lat2, lng2) {
-    return Math.sqrt(
-      Math.pow(lat1 - lat2, 2) + Math.pow(lng1 - lng2, 2)
-    );
+  function distance(a, b, c, d) {
+    return Math.sqrt(Math.pow(a - c, 2) + Math.pow(b - d, 2));
   }
 
   dropoffInput.addEventListener("focus", () => {
@@ -671,27 +670,38 @@ function payNow() {
       const userLng = pos.coords.longitude;
 
       airports.sort(
-        (a, b) =>
-          distance(userLat, userLng, a.lat, a.lng) -
-          distance(userLat, userLng, b.lat, b.lng)
+        (x, y) =>
+          distance(userLat, userLng, x.lat, x.lng) -
+          distance(userLat, userLng, y.lat, y.lng)
       );
 
       setTimeout(() => {
         const pac = document.querySelector(".pac-container");
-        if (!pac || pac.dataset.airportsAdded) return;
+        if (!pac || pac.dataset.enhanced) return;
 
-        pac.dataset.airportsAdded = "true";
+        pac.dataset.enhanced = "true";
 
-        airports.slice().reverse().forEach(airport => {
+        // Current Location
+        const current = document.createElement("div");
+        current.className = "pac-item";
+        current.innerHTML = "📍 <strong>Set As My Current Location</strong>";
+        current.onclick = () => {
+          dropoffInput.value = "Current Location";
+        };
+        pac.prepend(current);
+
+        // Airports (closest first)
+        airports.slice().reverse().forEach(a => {
           const div = document.createElement("div");
-          div.className = "pac-item airport-option";
-          div.innerHTML = `<strong>${airport.name}</strong>`;
+          div.className = "pac-item";
+          div.innerHTML = `<strong>${a.name}</strong>`;
           div.onclick = () => {
-            dropoffInput.value = airport.address;
+            dropoffInput.value = a.address;
           };
           pac.prepend(div);
         });
-      }, 300);
+
+      }, 250);
     });
   });
 })();
