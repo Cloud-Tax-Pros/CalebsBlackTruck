@@ -698,7 +698,7 @@ function payNow() {
         pac.dataset.airportsAdded = "true";
 
         airports.slice().reverse().forEach(airport => {
-          const div = document.createElement("pac-item");
+          const div = document.createElement("div");
           div.className = "pac-item airport-option";
           div.innerHTML = `<strong>${airport.name}</strong>`;
           div.onclick = () => {
