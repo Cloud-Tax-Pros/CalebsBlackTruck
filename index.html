@@ -637,6 +637,20 @@ function payNow() {
   window.location.href = "https://your-payment-link-here.com";
 }
 </script>
+  <script>
+(function () {
+  if (!window.google || !google.maps || !google.maps.places) return;
+
+  new google.maps.places.Autocomplete(
+    document.getElementById("dropoff"),
+    {
+      types: ["geocode"],
+      componentRestrictions: { country: "us" }
+    }
+  );
+})();
+</script>
+
 
  <script>
 (function () {
